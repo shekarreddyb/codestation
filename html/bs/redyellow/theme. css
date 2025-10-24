@@ -288,3 +288,67 @@
 -------------------------------------------*/
 .text-muted-strong { color: var(--gray-2) !important; }
 .bg-elev-1 { background-color: var(--gray-lite) !important; }
+
+
+/* CTA Red button */
+.btn-cta-red {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--brand-red);
+  --bs-btn-border-color: var(--brand-red);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--brand-red) 90%, black 10%);
+  --bs-btn-hover-border-color: color-mix(in srgb, var(--brand-red) 88%, black 12%);
+  --bs-btn-active-bg: color-mix(in srgb, var(--brand-red) 85%, black 15%);
+  --bs-btn-active-border-color: color-mix(in srgb, var(--brand-red) 82%, black 18%);
+  --bs-btn-disabled-bg: color-mix(in srgb, var(--brand-red) 35%, white 65%);
+  --bs-btn-disabled-border-color: color-mix(in srgb, var(--brand-red) 35%, white 65%);
+  --bs-btn-focus-shadow-rgb: 255, 205, 65;
+  border-radius: .2rem;
+}
+
+/* CTA Red Outline */
+.btn-outline-cta-red {
+  --bs-btn-color: var(--brand-red);
+  --bs-btn-border-color: var(--brand-red);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--brand-red);
+  --bs-btn-hover-border-color: var(--brand-red);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: color-mix(in srgb, var(--brand-red) 90%, black 10%);
+  --bs-btn-active-border-color: color-mix(in srgb, var(--brand-red) 88%, black 12%);
+  --bs-btn-focus-shadow-rgb: 255, 205, 65;
+  border-radius: .2rem;
+}
+
+/* Primary -> neutral gray */
+.btn-primary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--gray-1);
+  --bs-btn-border-color: var(--gray-1);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--gray-1) 80%, black 20%);
+  --bs-btn-hover-border-color: color-mix(in srgb, var(--gray-1) 80%, black 20%);
+  --bs-btn-active-bg: color-mix(in srgb, var(--gray-1) 70%, black 30%);
+  --bs-btn-active-border-color: color-mix(in srgb, var(--gray-1) 70%, black 30%);
+}
+
+/* Secondary -> light neutral */
+.btn-secondary {
+  --bs-btn-color: var(--gray-1);
+  --bs-btn-bg: var(--gray);
+  --bs-btn-border-color: var(--gray);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--gray) 85%, var(--gray-dark) 15%);
+  --bs-btn-hover-border-color: color-mix(in srgb, var(--gray) 85%, var(--gray-dark) 15%);
+  --bs-btn-active-bg: color-mix(in srgb, var(--gray) 75%, var(--gray-dark) 25%);
+  --bs-btn-active-border-color: color-mix(in srgb, var(--gray) 75%, var(--gray-dark) 25%);
+}
+
+/* Outline Secondary -> outline neutral */
+.btn-outline-secondary {
+  --bs-btn-color: var(--gray-1);
+  --bs-btn-border-color: var(--gray-dark);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--gray-1);
+  --bs-btn-hover-border-color: var(--gray-1);
+  --bs-btn-active-bg: color-mix(in srgb, var(--gray-1) 80%, black 20%);
+  --bs-btn-active-border-color: color-mix(in srgb, var(--gray-1) 80%, black 20%);
+  border-radius: .2rem;
+}
