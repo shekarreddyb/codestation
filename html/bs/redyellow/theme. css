@@ -1,15 +1,17 @@
 /* 
-  Bootstrap 5 Accent-First Theme (Plain CSS, No SCSS)
-  - Indigo for links (NOT for btn-primary)
-  - Default buttons are grayscale (btn-primary -> neutral gray)
-  - CTA red via .btn-cta-red
-  - Corporate radii: square globally, tiny rounding for buttons & inputs
+  Bootstrap 5.3.8 Accent-First Theme (Plain CSS, No SCSS)
+  - Use AFTER the Bootstrap 5.3.8 CDN link
+  - Links: Indigo (#5A469B)
+  - Default buttons: Grayscale (primary -> neutral gray)
+  - CTA: .btn-cta-red
+  - Corporate radii: square globally, tiny on buttons/inputs
+  - Brand Yellow used for borders, indicators, focus ring
 */
 
 /* ------------------------------------------
    Brand palette as custom properties
 -------------------------------------------*/
-:root {
+:root, [data-bs-theme="light"] {
   /* Brand */
   --brand-red:        #D71E28;
   --brand-yellow:     #FFCD41;
@@ -45,33 +47,32 @@
 
   /* ------------------------------------------
      Bootstrap root theming via CSS vars
-     (works without SCSS in Bootstrap 5.2/5.3+)
+     (BS 5.3.8 respects these scopes)
   -------------------------------------------*/
   /* Body */
   --bs-body-bg:       var(--white);
   --bs-body-color:    var(--gray-1);
+  --bs-heading-color: var(--black);
 
   /* Theme colors */
-  /* Make primary neutral gray for default buttons */
   --bs-primary:       var(--gray-1);
   --bs-secondary:     var(--gray-2);
-  --bs-success:       var(--green-dark-1); /* confirmations */
+  --bs-success:       var(--green-dark-1);
   --bs-info:          var(--indigo-light);
-  --bs-warning:       var(--orange-light); /* alerts */
-  --bs-danger:        var(--coral-dark-1); /* errors */
+  --bs-warning:       var(--orange-light);
+  --bs-danger:        var(--coral-dark-1);
   --bs-light:         var(--gray-lite);
   --bs-dark:          var(--gray-1);
 
-  /* Links use Indigo explicitly (decoupled from --bs-primary) */
+  /* Links use Indigo (decoupled from --bs-primary) */
   --bs-link-color:            var(--indigo-dark);
   --bs-link-hover-color:      color-mix(in srgb, var(--indigo-dark) 80%, var(--black) 20%);
+  --bs-link-underline-offset: 0.15em;
+  --bs-link-underline-opacity: 0.2;
 
   /* Borders & focus */
   --bs-border-color:          var(--gray);
   --bs-focus-ring-color:      color-mix(in srgb, var(--brand-yellow) 35%, transparent);
-
-  /* Typography */
-  --bs-heading-color:         var(--black);
 
   /* Radii â€” corporate flat by default */
   --bs-border-radius:         0;
@@ -85,13 +86,14 @@
    Component-specific radii (tiny rounding where desired)
 -------------------------------------------*/
 
-/* Buttons: keep small rounding */
+/* Buttons: keep small rounding + subtle hover lift */
 .btn {
   --bs-btn-border-radius: .2rem;
   --bs-btn-padding-y: .55rem;
   --bs-btn-padding-x: 1rem;
   --bs-btn-font-weight: 600;
-  transition: all .15s ease-in-out;
+  border-radius: .2rem;
+  transition: transform .15s ease-in-out;
 }
 .btn:hover { transform: translateY(-1px); }
 
@@ -100,8 +102,7 @@
 .form-select,
 .input-group .form-control,
 .input-group .form-select {
-  --bs-border-radius: .2rem; /* local component override */
-  border-radius: var(--bs-border-radius);
+  border-radius: .2rem;
   border-color: var(--bs-border-color);
 }
 .form-control:focus,
@@ -117,11 +118,10 @@
 .dropdown-menu,
 .tooltip .tooltip-inner,
 .popover {
-  --bs-border-radius: 0 !important;
   border-radius: 0 !important;
 }
 
-/* Tables & hr */
+/* Tables & subtle divider */
 .table { --bs-table-border-color: var(--gray); }
 .hr-soft {
   border: 0;
@@ -149,23 +149,36 @@
 .border-identity { border-left: 4px solid var(--brand-yellow) !important; }
 
 /* ------------------------------------------
-   CTA Red button (critical/primary callouts)
+   Buttons â€” CTA Red & Grayscale defaults
+   (vars + fallbacks for robustness)
 -------------------------------------------*/
+
+/* CTA Red */
 .btn-cta-red {
   --bs-btn-color: #fff;
   --bs-btn-bg: var(--brand-red);
   --bs-btn-border-color: var(--brand-red);
-  --bs-btn-hover-bg: color-mix(in srgb, var(--brand-red) 90%, var(--black) 10%);
-  --bs-btn-hover-border-color: color-mix(in srgb, var(--brand-red) 88%, var(--black) 12%);
-  --bs-btn-active-bg: color-mix(in srgb, var(--brand-red) 85%, var(--black) 15%);
-  --bs-btn-active-border-color: color-mix(in srgb, var(--brand-red) 82%, var(--black) 18%);
-  --bs-btn-disabled-bg: color-mix(in srgb, var(--brand-red) 35%, var(--white) 65%);
-  --bs-btn-disabled-border-color: color-mix(in srgb, var(--brand-red) 35%, var(--white) 65%);
-  --bs-btn-focus-shadow-rgb: 255, 205, 65; /* brand yellow glow */
-  border-radius: .2rem;
+  --bs-btn-hover-bg: color-mix(in srgb, var(--brand-red) 90%, black 10%);
+  --bs-btn-hover-border-color: color-mix(in srgb, var(--brand-red) 88%, black 12%);
+  --bs-btn-active-bg: color-mix(in srgb, var(--brand-red) 85%, black 15%);
+  --bs-btn-active-border-color: color-mix(in srgb, var(--brand-red) 82%, black 18%);
+  --bs-btn-focus-shadow-rgb: 255, 205, 65;
+  color: #fff !important;
+  background-color: var(--brand-red) !important;
+  border-color: var(--brand-red) !important;
+}
+.btn-cta-red:hover {
+  background-color: color-mix(in srgb, var(--brand-red) 90%, black 10%) !important;
+  border-color: color-mix(in srgb, var(--brand-red) 88%, black 12%) !important;
+}
+.btn-cta-red:active,
+.btn-cta-red.active,
+.show > .btn-cta-red.dropdown-toggle {
+  background-color: color-mix(in srgb, var(--brand-red) 85%, black 15%) !important;
+  border-color: color-mix(in srgb, var(--brand-red) 82%, black 18%) !important;
 }
 
-/* Outline variant */
+/* CTA Outline */
 .btn-outline-cta-red {
   --bs-btn-color: var(--brand-red);
   --bs-btn-border-color: var(--brand-red);
@@ -173,32 +186,34 @@
   --bs-btn-hover-bg: var(--brand-red);
   --bs-btn-hover-border-color: var(--brand-red);
   --bs-btn-active-color: #fff;
-  --bs-btn-active-bg: color-mix(in srgb, var(--brand-red) 90%, var(--black) 10%);
-  --bs-btn-active-border-color: color-mix(in srgb, var(--brand-red) 88%, var(--black) 12%);
+  --bs-btn-active-bg: color-mix(in srgb, var(--brand-red) 90%, black 10%);
+  --bs-btn-active-border-color: color-mix(in srgb, var(--brand-red) 88%, black 12%);
   --bs-btn-focus-shadow-rgb: 255, 205, 65;
-  border-radius: .2rem;
+  color: var(--brand-red) !important;
+  border-color: var(--brand-red) !important;
+}
+.btn-outline-cta-red:hover {
+  color: #fff !important;
+  background-color: var(--brand-red) !important;
+  border-color: var(--brand-red) !important;
 }
 
-/* ------------------------------------------
-   Grayscale Button Set (non-CTA defaults)
--------------------------------------------*/
-
-/* Make .btn-primary neutral gray by default */
+/* Primary -> neutral gray */
 .btn-primary {
   --bs-btn-color: #fff;
   --bs-btn-bg: var(--gray-1);
   --bs-btn-border-color: var(--gray-1);
-  --bs-btn-hover-bg: color-mix(in srgb, var(--gray-1) 80%, var(--black) 20%);
-  --bs-btn-hover-border-color: color-mix(in srgb, var(--gray-1) 80%, var(--black) 20%);
-  --bs-btn-active-bg: color-mix(in srgb, var(--gray-1) 70%, var(--black) 30%);
-  --bs-btn-active-border-color: color-mix(in srgb, var(--gray-1) 70%, var(--black) 30%);
-  --bs-btn-disabled-bg: var(--gray-3);
-  --bs-btn-disabled-border-color: var(--gray-3);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--gray-1) 80%, black 20%);
+  --bs-btn-hover-border-color: color-mix(in srgb, var(--gray-1) 80%, black 20%);
+  --bs-btn-active-bg: color-mix(in srgb, var(--gray-1) 70%, black 30%);
+  --bs-btn-active-border-color: color-mix(in srgb, var(--gray-1) 70%, black 30%);
+  color: #fff !important;
+  background-color: var(--gray-1) !important;
+  border-color: var(--gray-1) !important;
 }
 
-/* Light neutral (secondary look) */
-.btn-neutral-light,
-.btn-secondary { /* let secondary also be a light neutral */
+/* Secondary -> light neutral */
+.btn-secondary {
   --bs-btn-color: var(--gray-1);
   --bs-btn-bg: var(--gray);
   --bs-btn-border-color: var(--gray);
@@ -206,20 +221,25 @@
   --bs-btn-hover-border-color: color-mix(in srgb, var(--gray) 85%, var(--gray-dark) 15%);
   --bs-btn-active-bg: color-mix(in srgb, var(--gray) 75%, var(--gray-dark) 25%);
   --bs-btn-active-border-color: color-mix(in srgb, var(--gray) 75%, var(--gray-dark) 25%);
-  --bs-btn-disabled-bg: var(--gray-4);
-  --bs-btn-disabled-border-color: var(--gray-4);
+  color: var(--gray-1) !important;
+  background-color: var(--gray) !important;
+  border-color: var(--gray) !important;
 }
 
-/* Outline neutral (for subtle actions like Cancel) */
-.btn-outline-neutral,
+/* Outline Secondary -> outline neutral */
 .btn-outline-secondary {
   --bs-btn-color: var(--gray-1);
   --bs-btn-border-color: var(--gray-dark);
   --bs-btn-hover-color: #fff;
   --bs-btn-hover-bg: var(--gray-1);
   --bs-btn-hover-border-color: var(--gray-1);
-  --bs-btn-active-bg: color-mix(in srgb, var(--gray-1) 80%, var(--black) 20%);
-  --bs-btn-active-border-color: color-mix(in srgb, var(--gray-1) 80%, var(--black) 20%);
+  color: var(--gray-1) !important;
+  border-color: var(--gray-dark) !important;
+}
+.btn-outline-secondary:hover {
+  color: #fff !important;
+  background-color: var(--gray-1) !important;
+  border-color: var(--gray-1) !important;
 }
 
 /* ------------------------------------------
@@ -284,104 +304,7 @@
 }
 
 /* ------------------------------------------
-   Optional dark text-muted variant
+   Optional helpers
 -------------------------------------------*/
 .text-muted-strong { color: var(--gray-2) !important; }
 .bg-elev-1 { background-color: var(--gray-lite) !important; }
-
-
-/* ===== Bulletproof button overrides (works with BS 5.0–5.3+) ===== */
-
-/* --- CTA RED --- */
-.btn-cta-red {
-  /* Modern vars */
-  --bs-btn-color: #fff;
-  --bs-btn-bg: var(--brand-red);
-  --bs-btn-border-color: var(--brand-red);
-  --bs-btn-hover-bg: color-mix(in srgb, var(--brand-red) 90%, black 10%);
-  --bs-btn-hover-border-color: color-mix(in srgb, var(--brand-red) 88%, black 12%);
-  --bs-btn-active-bg: color-mix(in srgb, var(--brand-red) 85%, black 15%);
-  --bs-btn-active-border-color: color-mix(in srgb, var(--brand-red) 82%, black 18%);
-  --bs-btn-focus-shadow-rgb: 255, 205, 65;
-
-  /* Fallbacks for 5.0/5.1 */
-  color: #fff !important;
-  background-color: var(--brand-red) !important;
-  border-color: var(--brand-red) !important;
-}
-.btn-cta-red:hover {
-  background-color: color-mix(in srgb, var(--brand-red) 90%, black 10%) !important;
-  border-color: color-mix(in srgb, var(--brand-red) 88%, black 12%) !important;
-}
-.btn-cta-red:active,
-.btn-cta-red.active,
-.show > .btn-cta-red.dropdown-toggle {
-  background-color: color-mix(in srgb, var(--brand-red) 85%, black 15%) !important;
-  border-color: color-mix(in srgb, var(--brand-red) 82%, black 18%) !important;
-}
-
-/* --- PRIMARY (neutral gray) --- */
-.btn-primary {
-  /* Modern vars */
-  --bs-btn-color: #fff;
-  --bs-btn-bg: var(--gray-1);
-  --bs-btn-border-color: var(--gray-1);
-  --bs-btn-hover-bg: color-mix(in srgb, var(--gray-1) 80%, black 20%);
-  --bs-btn-hover-border-color: color-mix(in srgb, var(--gray-1) 80%, black 20%);
-  --bs-btn-active-bg: color-mix(in srgb, var(--gray-1) 70%, black 30%);
-  --bs-btn-active-border-color: color-mix(in srgb, var(--gray-1) 70%, black 30%);
-
-  /* Fallbacks for 5.0/5.1 */
-  color: #fff !important;
-  background-color: var(--gray-1) !important;
-  border-color: var(--gray-1) !important;
-}
-.btn-primary:hover {
-  background-color: color-mix(in srgb, var(--gray-1) 80%, black 20%) !important;
-  border-color: color-mix(in srgb, var(--gray-1) 80%, black 20%) !important;
-}
-.btn-primary:active,
-.btn-primary.active,
-.show > .btn-primary.dropdown-toggle {
-  background-color: color-mix(in srgb, var(--gray-1) 70%, black 30%) !important;
-  border-color: color-mix(in srgb, var(--gray-1) 70%, black 30%) !important;
-}
-
-/* --- SECONDARY (light neutral) --- */
-.btn-secondary {
-  --bs-btn-color: var(--gray-1);
-  --bs-btn-bg: var(--gray);
-  --bs-btn-border-color: var(--gray);
-  --bs-btn-hover-bg: color-mix(in srgb, var(--gray) 85%, var(--gray-dark) 15%);
-  --bs-btn-hover-border-color: color-mix(in srgb, var(--gray) 85%, var(--gray-dark) 15%);
-  --bs-btn-active-bg: color-mix(in srgb, var(--gray) 75%, var(--gray-dark) 25%);
-  --bs-btn-active-border-color: color-mix(in srgb, var(--gray) 75%, var(--gray-dark) 25%);
-
-  color: var(--gray-1) !important;
-  background-color: var(--gray) !important;
-  border-color: var(--gray) !important;
-}
-.btn-secondary:hover {
-  background-color: color-mix(in srgb, var(--gray) 85%, var(--gray-dark) 15%) !important;
-  border-color: color-mix(in srgb, var(--gray) 85%, var(--gray-dark) 15%) !important;
-}
-
-/* --- OUTLINE SECONDARY (neutral outline) --- */
-.btn-outline-secondary {
-  --bs-btn-color: var(--gray-1);
-  --bs-btn-border-color: var(--gray-dark);
-  --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: var(--gray-1);
-  --bs-btn-hover-border-color: var(--gray-1);
-
-  color: var(--gray-1) !important;
-  border-color: var(--gray-dark) !important;
-}
-.btn-outline-secondary:hover {
-  color: #fff !important;
-  background-color: var(--gray-1) !important;
-  border-color: var(--gray-1) !important;
-}
-
-/* tiny rounding (corporate-friendly) */
-.btn { border-radius: .2rem !important; }
