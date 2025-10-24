@@ -1,0 +1,290 @@
+/* 
+  Bootstrap 5 Accent-First Theme (Plain CSS, No SCSS)
+  - Indigo for links (NOT for btn-primary)
+  - Default buttons are grayscale (btn-primary -> neutral gray)
+  - CTA red via .btn-cta-red
+  - Corporate radii: square globally, tiny rounding for buttons & inputs
+*/
+
+/* ------------------------------------------
+   Brand palette as custom properties
+-------------------------------------------*/
+:root {
+  /* Brand */
+  --brand-red:        #D71E28;
+  --brand-yellow:     #FFCD41;
+  --brand-yellow-1:   #FFDC78;
+  --brand-yellow-2:   #FFE6A0; /* corrected from FFE6AO */
+  --brand-yellow-3:   #FFF0CB;
+  --brand-yellow-4:   #FFF7E2;
+
+  --green-light:      #49B876;
+  --green-dark-1:     #178757;
+  --green-dark-2:     #007545;
+
+  --orange-light:     #FF9657;
+  --orange-dark:      #A93E00;
+
+  --coral-light:      #FF755E;
+  --coral-dark-1:     #D73F26;
+  --coral-dark-2:     #BF2D19;
+
+  --indigo-light:     #9A89D9;
+  --indigo-dark:      #5A469B;
+
+  --gray-lite:        #F9F7F6;
+  --gray:             #E2DEDE;
+  --gray-dark:        #9C9191;
+  --gray-1:           #3B3331;
+  --gray-2:           #787070;
+  --gray-3:           #B5ADAD;
+  --gray-4:           #F4F0ED;
+
+  --white:            #FFFFFF;
+  --black:            #141414;
+
+  /* ------------------------------------------
+     Bootstrap root theming via CSS vars
+     (works without SCSS in Bootstrap 5.2/5.3+)
+  -------------------------------------------*/
+  /* Body */
+  --bs-body-bg:       var(--white);
+  --bs-body-color:    var(--gray-1);
+
+  /* Theme colors */
+  /* Make primary neutral gray for default buttons */
+  --bs-primary:       var(--gray-1);
+  --bs-secondary:     var(--gray-2);
+  --bs-success:       var(--green-dark-1); /* confirmations */
+  --bs-info:          var(--indigo-light);
+  --bs-warning:       var(--orange-light); /* alerts */
+  --bs-danger:        var(--coral-dark-1); /* errors */
+  --bs-light:         var(--gray-lite);
+  --bs-dark:          var(--gray-1);
+
+  /* Links use Indigo explicitly (decoupled from --bs-primary) */
+  --bs-link-color:            var(--indigo-dark);
+  --bs-link-hover-color:      color-mix(in srgb, var(--indigo-dark) 80%, var(--black) 20%);
+
+  /* Borders & focus */
+  --bs-border-color:          var(--gray);
+  --bs-focus-ring-color:      color-mix(in srgb, var(--brand-yellow) 35%, transparent);
+
+  /* Typography */
+  --bs-heading-color:         var(--black);
+
+  /* Radii â€” corporate flat by default */
+  --bs-border-radius:         0;
+  --bs-border-radius-sm:      0;
+  --bs-border-radius-lg:      0;
+  --bs-border-radius-xl:      0;
+  --bs-border-radius-xxl:     0;
+}
+
+/* ------------------------------------------
+   Component-specific radii (tiny rounding where desired)
+-------------------------------------------*/
+
+/* Buttons: keep small rounding */
+.btn {
+  --bs-btn-border-radius: .2rem;
+  --bs-btn-padding-y: .55rem;
+  --bs-btn-padding-x: 1rem;
+  --bs-btn-font-weight: 600;
+  transition: all .15s ease-in-out;
+}
+.btn:hover { transform: translateY(-1px); }
+
+/* Inputs & selects: small rounding + brand-yellow focus halo */
+.form-control,
+.form-select,
+.input-group .form-control,
+.input-group .form-select {
+  --bs-border-radius: .2rem; /* local component override */
+  border-radius: var(--bs-border-radius);
+  border-color: var(--bs-border-color);
+}
+.form-control:focus,
+.form-select:focus {
+  box-shadow: 0 0 0 .25rem color-mix(in srgb, var(--brand-yellow) 25%, transparent);
+  border-color: color-mix(in srgb, var(--brand-yellow) 40%, var(--bs-border-color));
+}
+
+/* Cards, alerts, modals, dropdowns, tooltips: square */
+.card,
+.alert,
+.modal-content,
+.dropdown-menu,
+.tooltip .tooltip-inner,
+.popover {
+  --bs-border-radius: 0 !important;
+  border-radius: 0 !important;
+}
+
+/* Tables & hr */
+.table { --bs-table-border-color: var(--gray); }
+.hr-soft {
+  border: 0;
+  border-top: 1px solid var(--gray);
+  opacity: 1;
+}
+
+/* ------------------------------------------
+   Accent utilities (use sparingly)
+-------------------------------------------*/
+.text-accent-red { color: var(--brand-red) !important; }
+.text-accent-yellow { color: var(--brand-yellow) !important; }
+
+.bg-accent-yellow-1 { background-color: var(--brand-yellow-1) !important; }
+.bg-accent-yellow-2 { background-color: var(--brand-yellow-2) !important; }
+.bg-accent-yellow-3 { background-color: var(--brand-yellow-3) !important; }
+.bg-accent-yellow-4 { background-color: var(--brand-yellow-4) !important; }
+
+.border-accent-yellow   { border-color: var(--brand-yellow) !important; }
+.border-accent-yellow-2 { border-color: var(--brand-yellow-2) !important; }
+.border-accent-yellow-3 { border-color: var(--brand-yellow-3) !important; }
+.border-accent-yellow-4 { border-color: var(--brand-yellow-4) !important; }
+
+/* Identity accent bar (left border) */
+.border-identity { border-left: 4px solid var(--brand-yellow) !important; }
+
+/* ------------------------------------------
+   CTA Red button (critical/primary callouts)
+-------------------------------------------*/
+.btn-cta-red {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--brand-red);
+  --bs-btn-border-color: var(--brand-red);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--brand-red) 90%, var(--black) 10%);
+  --bs-btn-hover-border-color: color-mix(in srgb, var(--brand-red) 88%, var(--black) 12%);
+  --bs-btn-active-bg: color-mix(in srgb, var(--brand-red) 85%, var(--black) 15%);
+  --bs-btn-active-border-color: color-mix(in srgb, var(--brand-red) 82%, var(--black) 18%);
+  --bs-btn-disabled-bg: color-mix(in srgb, var(--brand-red) 35%, var(--white) 65%);
+  --bs-btn-disabled-border-color: color-mix(in srgb, var(--brand-red) 35%, var(--white) 65%);
+  --bs-btn-focus-shadow-rgb: 255, 205, 65; /* brand yellow glow */
+  border-radius: .2rem;
+}
+
+/* Outline variant */
+.btn-outline-cta-red {
+  --bs-btn-color: var(--brand-red);
+  --bs-btn-border-color: var(--brand-red);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--brand-red);
+  --bs-btn-hover-border-color: var(--brand-red);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: color-mix(in srgb, var(--brand-red) 90%, var(--black) 10%);
+  --bs-btn-active-border-color: color-mix(in srgb, var(--brand-red) 88%, var(--black) 12%);
+  --bs-btn-focus-shadow-rgb: 255, 205, 65;
+  border-radius: .2rem;
+}
+
+/* ------------------------------------------
+   Grayscale Button Set (non-CTA defaults)
+-------------------------------------------*/
+
+/* Make .btn-primary neutral gray by default */
+.btn-primary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--gray-1);
+  --bs-btn-border-color: var(--gray-1);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--gray-1) 80%, var(--black) 20%);
+  --bs-btn-hover-border-color: color-mix(in srgb, var(--gray-1) 80%, var(--black) 20%);
+  --bs-btn-active-bg: color-mix(in srgb, var(--gray-1) 70%, var(--black) 30%);
+  --bs-btn-active-border-color: color-mix(in srgb, var(--gray-1) 70%, var(--black) 30%);
+  --bs-btn-disabled-bg: var(--gray-3);
+  --bs-btn-disabled-border-color: var(--gray-3);
+}
+
+/* Light neutral (secondary look) */
+.btn-neutral-light,
+.btn-secondary { /* let secondary also be a light neutral */
+  --bs-btn-color: var(--gray-1);
+  --bs-btn-bg: var(--gray);
+  --bs-btn-border-color: var(--gray);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--gray) 85%, var(--gray-dark) 15%);
+  --bs-btn-hover-border-color: color-mix(in srgb, var(--gray) 85%, var(--gray-dark) 15%);
+  --bs-btn-active-bg: color-mix(in srgb, var(--gray) 75%, var(--gray-dark) 25%);
+  --bs-btn-active-border-color: color-mix(in srgb, var(--gray) 75%, var(--gray-dark) 25%);
+  --bs-btn-disabled-bg: var(--gray-4);
+  --bs-btn-disabled-border-color: var(--gray-4);
+}
+
+/* Outline neutral (for subtle actions like Cancel) */
+.btn-outline-neutral,
+.btn-outline-secondary {
+  --bs-btn-color: var(--gray-1);
+  --bs-btn-border-color: var(--gray-dark);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--gray-1);
+  --bs-btn-hover-border-color: var(--gray-1);
+  --bs-btn-active-bg: color-mix(in srgb, var(--gray-1) 80%, var(--black) 20%);
+  --bs-btn-active-border-color: color-mix(in srgb, var(--gray-1) 80%, var(--black) 20%);
+}
+
+/* ------------------------------------------
+   Tabs: brand-yellow active underline
+-------------------------------------------*/
+.nav-tabs {
+  --bs-nav-tabs-border-width: 0;
+}
+.nav-tabs .nav-link {
+  border: 0;
+  color: var(--gray-2);
+  padding-bottom: .6rem;
+  position: relative;
+}
+.nav-tabs .nav-link.active,
+.nav-tabs .nav-link[aria-current="page"] {
+  color: var(--bs-dark);
+}
+.nav-tabs .nav-link.active::after,
+.nav-tabs .nav-link[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  height: 3px;
+  background: var(--brand-yellow);
+  border-radius: 3px 3px 0 0;
+}
+
+/* ------------------------------------------
+   Alerts tuned to your semantics
+-------------------------------------------*/
+.alert-success {
+  --bs-alert-color: var(--green-dark-2);
+  --bs-alert-bg: color-mix(in srgb, var(--green-light) 20%, var(--white) 80%);
+  --bs-alert-border-color: color-mix(in srgb, var(--green-light) 40%, var(--white) 60%);
+}
+.alert-warning {
+  --bs-alert-color: var(--orange-dark);
+  --bs-alert-bg: color-mix(in srgb, var(--orange-light) 15%, var(--white) 85%);
+  --bs-alert-border-color: color-mix(in srgb, var(--orange-light) 35%, var(--white) 65%);
+}
+.alert-danger {
+  --bs-alert-color: var(--coral-dark-2);
+  --bs-alert-bg: color-mix(in srgb, var(--coral-light) 15%, var(--white) 85%);
+  --bs-alert-border-color: color-mix(in srgb, var(--coral-light) 35%, var(--white) 65%);
+}
+
+/* ------------------------------------------
+   Cards & subtle elevation
+-------------------------------------------*/
+.card {
+  border: 1px solid var(--gray);
+  box-shadow: 0 2px 6px rgba(20, 20, 20, .04);
+  background-color: var(--white);
+}
+
+/* ------------------------------------------
+   Table zebra striping (soft)
+-------------------------------------------*/
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+  --bs-table-accent-bg: color-mix(in srgb, var(--gray-lite) 10%, var(--white) 90%);
+}
+
+/* ------------------------------------------
+   Optional dark text-muted variant
+-------------------------------------------*/
+.text-muted-strong { color: var(--gray-2) !important; }
+.bg-elev-1 { background-color: var(--gray-lite) !important; }
