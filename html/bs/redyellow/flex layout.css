@@ -1,0 +1,18 @@
+html, body {
+  height: 100%;
+}
+
+body {
+  min-height: 100dvh;        /* full viewport, mobile-friendly */
+  display: flex;
+  flex-direction: column;
+  margin: 0;                 /* reset Bootstrap’s optional body margin */
+}
+
+main {
+  flex: 1 0 auto;            /* fill available space between header & footer */
+}
+
+footer {
+  flex-shrink: 0;            /* stay at bottom, never collapse */
+}
