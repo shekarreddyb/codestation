@@ -1,0 +1,50 @@
+<ul class="list-group list-group-flush">
+  <li class="list-group-item d-flex justify-content-between align-items-start" data-roles="admin,ops">
+    <div>
+      <a href="/alerts" class="fw-semibold link-primary">
+        <i class="bi bi-exclamation-triangle me-2 text-warning"></i>Alerts & Edit/Create Orders
+      </a>
+      <div class="small text-muted">Review alerts, edit orders, create new ones</div>
+    </div>
+    <span class="badge text-bg-warning">3</span>
+  </li>
+
+  <li class="list-group-item" data-roles="admin,ops,finance">
+    <a href="/confirmations" class="fw-semibold link-primary">
+      <i class="bi bi-check-circle me-2 text-success"></i>Confirmations
+    </a>
+    <div class="small text-muted">Pending confirmations & approvals</div>
+  </li>
+
+  <li class="list-group-item" data-roles="ops">
+    <a href="/atm-orders" class="fw-semibold link-primary">
+      <i class="bi bi-bank me-2"></i>ATM Orders
+    </a>
+    <div class="small text-muted">Manage ATM replenishment orders</div>
+  </li>
+
+  <li class="list-group-item" data-roles="admin,ops">
+    <a href="/bulk-orders" class="fw-semibold link-primary">
+      <i class="bi bi-box-seam me-2"></i>Bulk Orders
+    </a>
+    <div class="small text-muted">Create high-volume purchase orders</div>
+  </li>
+
+  <li class="list-group-item" data-roles="admin,ops,finance">
+    <a href="/vendor-profile" class="fw-semibold link-primary">
+      <i class="bi bi-person-badge me-2 text-accent-red"></i>Vendor Profile
+    </a>
+    <div class="small text-muted">Search & view vendor details</div>
+  </li>
+
+  <!-- Special users only -->
+  <li class="list-group-item d-flex justify-content-between align-items-start" data-roles="power,admin">
+    <div>
+      <a href="/matrix" class="fw-semibold link-primary">
+        <i class="bi bi-grid me-2 text-accent-yellow"></i>Matrix
+      </a>
+      <div class="small text-muted">Advanced cross-module views</div>
+    </div>
+    <span class="badge border-accent-yellow">Restricted</span>
+  </li>
+</ul>
