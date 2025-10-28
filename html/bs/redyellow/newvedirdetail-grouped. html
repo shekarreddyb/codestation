@@ -1,0 +1,153 @@
+<section class="container py-4">
+
+  <!-- Header / actions -->
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div class="d-flex align-items-center gap-2">
+      <span class="dot"></span>
+      <h1 class="h5 mb-0">@Model.Name</h1>
+      <span class="badge @(Model.Live ? "text-bg-success" : "text-bg-secondary") ms-2">
+        @(Model.Live ? "LIVE" : "INACTIVE")
+      </span>
+    </div>
+    <div class="d-flex gap-2">
+      <a asp-controller="Vendors" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary btn-sm">Edit</a>
+      <a asp-controller="Vendors" asp-action="Index" class="btn btn-secondary btn-sm">Back to Vendor List</a>
+    </div>
+  </div>
+
+  <!-- Top strip with quick links (no icons, just clarity) -->
+  <div class="card mb-3 border-identity">
+    <div class="card-body d-flex flex-wrap align-items-center justify-content-between gap-3">
+      <div class="small text-muted">Vendor ID: <span class="fw-semibold">@Model.Id</span></div>
+      <div class="d-flex flex-wrap gap-2">
+        <a asp-controller="Orders" asp-action="Bulk" asp-route-vendorId="@Model.Id" class="btn btn-outline-secondary btn-sm">Bulk Orders</a>
+        <a asp-controller="Orders" asp-action="Atm"  asp-route-vendorId="@Model.Id" class="btn btn-outline-secondary btn-sm">ATM Orders</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <!-- Details left -->
+    <div class="col-lg-8">
+      <div class="card">
+        <div class="card-body">
+          <div class="section-title"><span class="dot"></span><span>Details</span></div>
+
+          <div class="kv">
+            <div class="kv-row">
+              <div class="kv-label">Name</div>
+              <div class="kv-value">@Model.Name</div>
+            </div>
+            <div class="kv-row">
+              <div class="kv-label">Live</div>
+              <div class="kv-value">@(Model.Live ? "Yes" : "No")</div>
+            </div>
+            <div class="kv-row">
+              <div class="kv-label">Zero Order Notification</div>
+              <div class="kv-value">@(Model.ZeroOrderNotification ? "Enabled" : "Disabled")</div>
+            </div>
+
+            <div class="kv-row">
+              <div class="kv-label">ARU Phone</div>
+              <div class="kv-value">@Model.AruPhone</div>
+            </div>
+            <div class="kv-row">
+              <div class="kv-label">ARU Calling ID</div>
+              <div class="kv-value">@Model.AruCallingId</div>
+            </div>
+            <div class="kv-row">
+              <div class="kv-label">ARU Passcode</div>
+              <div class="kv-value">••••••</div>
+            </div>
+
+            <div class="kv-row">
+              <div class="kv-label">CEO Account</div>
+              <div class="kv-value">@Model.CeoAccount</div>
+            </div>
+            <div class="kv-row">
+              <div class="kv-label">CEO Location</div>
+              <div class="kv-value">@Model.CeoLocation</div>
+            </div>
+            <div class="kv-row">
+              <div class="kv-label">Deadline</div>
+              <div class="kv-value">@Model.Deadline?.ToString("HH:mm")</div>
+            </div>
+
+            <div class="kv-row">
+              <div class="kv-label">Vendor Phone</div>
+              <div class="kv-value">@Model.VendorPhone</div>
+            </div>
+            <div class="kv-row">
+              <div class="kv-label">Vault Lead Adjustment</div>
+              <div class="kv-value">₹ @Model.VaultLeadAdjustment</div>
+            </div>
+            <div class="kv-row">
+              <div class="kv-label">Vault CC Offset</div>
+              <div class="kv-value">₹ @Model.VaultCcOffset</div>
+            </div>
+          </div>
+
+          <div class="section-title mt-4"><span class="dot"></span><span>Comments</span></div>
+          <div class="border rounded p-2 bg-elev-1 small">@Model.Comments</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right column: emails + quick links -->
+    <div class="col-lg-4">
+      <div class="card">
+        <div class="card-body">
+          <div class="section-title"><span class="dot"></span><span>Emails</span></div>
+
+          @if (Model.Emails != null && Model.Emails.Any())
+          {
+            <div class="d-flex flex-wrap gap-1">
+              @foreach (var email in Model.Emails)
+              {
+                <span class="badge rounded-pill text-bg-light">@email</span>
+              }
+            </div>
+          }
+          else
+          {
+            <div class="text-muted small">No emails configured.</div>
+          }
+        </div>
+      </div>
+
+      <div class="card mt-3">
+        <div class="card-body">
+          <div class="section-title"><span class="dot"></span><span>Quick Links</span></div>
+          <div class="list-group list-group-flush">
+            <a asp-controller="Orders" asp-action="Bulk" asp-route-vendorId="@Model.Id" class="list-group-item d-flex justify-content-between align-items-center">
+              <span>Bulk Orders</span><i class="bi bi-chevron-right text-muted"></i>
+            </a>
+            <a asp-controller="Orders" asp-action="Atm" asp-route-vendorId="@Model.Id" class="list-group-item d-flex justify-content-between align-items-center">
+              <span>ATM Orders</span><i class="bi bi-chevron-right text-muted"></i>
+            </a>
+            <a asp-controller="Vendors" asp-action="Edit" asp-route-id="@Model.Id" class="list-group-item d-flex justify-content-between align-items-center">
+              <span>Edit</span><i class="bi bi-chevron-right text-muted"></i>
+            </a>
+            <a asp-controller="Vendors" asp-action="Index" class="list-group-item d-flex justify-content-between align-items-center">
+              <span>Back to Vendor List</span><i class="bi bi-chevron-right text-muted"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+.kv { display: grid; grid-template-columns: minmax(160px, 1fr) minmax(0, 2fr); gap: .5rem 1rem; }
+.kv .kv-label { color: var(--bs-secondary-color); text-transform: uppercase; letter-spacing: .02em; font-size: .8rem; }
+.kv .kv-value { font-weight: 600; color: var(--bs-body-color); }
+.kv .kv-row { display: contents; } /* allow label/value to align within the grid */
+
+.section-title {
+  display:flex; align-items:center; gap:.5rem;
+  font-weight:600; font-size: .95rem; margin-bottom:.75rem;
+}
+.section-title .dot {
+  width:.5rem; height:.5rem; border-radius:50%; background: var(--brand-yellow);
+}
