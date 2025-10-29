@@ -1,0 +1,191 @@
+@model GlMonitoredPageVm
+@{
+    ViewData["Title"] = "cash ordering - General ledger entries monitored";
+}
+
+<section class="container py-4">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h1 class="h5 mb-0">cash ordering - General ledger entries monitored</h1>
+    <a asp-controller="GlMonitored" asp-action="Reports" class="btn btn-outline-secondary btn-sm">
+      <i class="bi bi-graph-up me-1"></i> Reports
+    </a>
+  </div>
+
+  <!-- Insert form -->
+  <div class="card mb-3">
+    <div class="card-body">
+      <h2 class="h6 mb-3">Insert New Entry</h2>
+
+      <form asp-controller="GlMonitored" asp-action="Insert" method="post" class="row g-3">
+        <div class="col-sm-4">
+          <label asp-for="NewEntry.Category" class="form-label">Category</label>
+          <select asp-for="NewEntry.Category" class="form-select" asp-items="Model.CategoryOptions">
+            <option value="">-- Select --</option>
+          </select>
+          <span asp-validation-for="NewEntry.Category" class="text-danger small"></span>
+        </div>
+
+        <div class="col-sm-4">
+          <label asp-for="NewEntry.WorkDate" class="form-label">Work date</label>
+          <input asp-for="NewEntry.WorkDate" type="date" class="form-control" />
+          <span asp-validation-for="NewEntry.WorkDate" class="text-danger small"></span>
+        </div>
+
+        <div class="col-sm-4">
+          <label asp-for="NewEntry.ItemsMonitored" class="form-label">GL entry items monitored</label>
+          <input asp-for="NewEntry.ItemsMonitored" type="number" min="0" step="1" class="form-control" />
+          <span asp-validation-for="NewEntry.ItemsMonitored" class="text-danger small"></span>
+        </div>
+
+        <div class="col-12 d-flex justify-content-end">
+          <button type="submit" class="btn btn-cta-red">
+            <i class="bi bi-plus-circle me-1"></i> Insert
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Data grid -->
+  <div class="card">
+    <div class="card-body">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <h2 class="h6 mb-0">Recent Entries</h2>
+        <form asp-controller="GlMonitored" asp-action="Index" method="get" class="d-flex gap-2">
+          <input name="q" value="@Model.Query" class="form-control form-control-sm" placeholder="Search category or user..." />
+          <button class="btn btn-secondary btn-sm" type="submit">Search</button>
+        </form>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-striped align-middle mb-0">
+          <thead class="small text-muted">
+            <tr>
+              <th>Category</th>
+              <th>Workdate</th>
+              <th>Items monitored</th>
+              <th>Created by</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+          @if (Model.Rows?.Any() == true)
+          {
+              foreach (var row in Model.Rows)
+              {
+                  <tr>
+                    <td>@row.Category</td>
+                    <td>@row.WorkDate.ToString("yyyy-MM-dd")</td>
+                    <td>@row.ItemsMonitored</td>
+                    <td>@row.CreatedBy</td>
+                    <td class="text-end">
+                      <a asp-controller="GlMonitored"
+                         asp-action="Edit"
+                         asp-route-id="@row.Id"
+                         class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-pencil-square me-1"></i> Edit
+                      </a>
+                    </td>
+                  </tr>
+              }
+          }
+          else
+          {
+              <tr><td colspan="5" class="text-muted small">No entries yet.</td></tr>
+          }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+@section Scripts {
+  <partial name="_ValidationScriptsPartial" />
+}
+
+
+
+
+
+
+
+@model GlMonitoredReportVm
+@{
+    ViewData["Title"] = "GL Monitored Reports";
+}
+
+<section class="container py-4">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h1 class="h5 mb-0">Reports — GL Entries</h1>
+    <a asp-controller="GlMonitored" asp-action="Index" class="btn btn-secondary btn-sm">
+      <i class="bi bi-arrow-left me-1"></i> Back
+    </a>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <h2 class="h6 mb-3">Find by Date Range</h2>
+
+      <form asp-controller="GlMonitored" asp-action="Reports" method="get" class="row g-3">
+        <div class="col-sm-4">
+          <label asp-for="FromDate" class="form-label">From</label>
+          <input asp-for="FromDate" type="date" class="form-control" />
+        </div>
+        <div class="col-sm-4">
+          <label asp-for="ToDate" class="form-label">To</label>
+          <input asp-for="ToDate" type="date" class="form-control" />
+        </div>
+        <div class="col-sm-4 d-flex align-items-end">
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="bi bi-search me-1"></i> Find
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Results: Workdate + link -->
+  <div class="card">
+    <div class="card-body">
+      <h2 class="h6 mb-2">Results</h2>
+      <div class="table-responsive">
+        <table class="table table-striped align-middle mb-0">
+          <thead class="small text-muted">
+            <tr>
+              <th>Workdate</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+          @if (Model.Workdates?.Any() == true)
+          {
+              foreach (var d in Model.Workdates.OrderByDescending(x => x))
+              {
+                  <tr>
+                    <td>@d.ToString("yyyy-MM-dd")</td>
+                    <td class="text-end">
+                      <a asp-controller="GlMonitored"
+                         asp-action="ByWorkDate"
+                         asp-route-workDate="@d.ToString("yyyy-MM-dd")"
+                         class="btn btn-outline-secondary btn-sm">
+                        Show all records
+                      </a>
+                    </td>
+                  </tr>
+              }
+          }
+          else
+          {
+              <tr><td colspan="2" class="text-muted small">No data for selected range.</td></tr>
+          }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
