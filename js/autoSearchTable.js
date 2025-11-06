@@ -1,31 +1,34 @@
-
+<script>
 (function ($) {
   const DEFAULTS = {
     // UI
-    placeholder: null,                // override placeholder text
-    inputSelector: null,              // reuse an existing input
+    placeholder: null,
+    inputSelector: null,
     inputClass: 'auto-search-input form-control form-control-sm mb-2',
-    placement: 'before',              // 'before' | 'after' (where to inject if auto-generated)
+    placement: 'before', // 'before' | 'after'
 
     // Behavior
     debounceMs: 150,
-    excludeColumns: [],               // [0,2] etc., zero-based
-    excludeRowSelector: '[data-search-fixed]',   // rows that are always shown
-    ignoreRowSelector:  '[data-search-ignore]',  // rows whose text is ignored for matching
-    rowTextGetter: null               // (tr) => 'custom searchable text'
+    excludeColumns: [],
+    excludeRowSelector: '[data-search-fixed]', // rows always shown (not counted for "no results")
+    ignoreRowSelector:  '[data-search-ignore]', // rows whose text is ignored for matching
+    rowTextGetter: null,
+
+    // No-results row
+    noResults: {
+      enabled: true,
+      text: 'No results found',
+      className: 'auto-search-empty text-muted',
+      // colspan: 'auto' uses <thead> col count; or set a number
+      colspan: 'auto',
+      // where to insert: 'tbody-end' (default) or 'tbody-start'
+      insertAt: 'tbody-end'
+    }
   };
 
-  // Small debounce helper
-  function debounce(fn, ms) {
-    let t; return function () {
-      const ctx = this, args = arguments;
-      clearTimeout(t); t = setTimeout(() => fn.apply(ctx, args), ms);
-    };
-  }
+  function debounce(fn, ms) { let t; return function(){ clearTimeout(t); t = setTimeout(()=>fn.apply(this, arguments), ms); }; }
 
-  // Plugin entry (supports method calls later)
   $.fn.autoSearch = function (optsOrMethod) {
-    // Method calls: $('#t').autoSearch('refresh') / ('destroy')
     if (typeof optsOrMethod === 'string') {
       const method = optsOrMethod;
       return this.each(function () {
@@ -39,19 +42,12 @@
     const options = optsOrMethod || {};
     return this.each(function () {
       const $table = $(this);
+      const prior = $table.data('autoSearchApi'); if (prior) prior.destroy();
 
-      // Prevent double-init
-      const existing = $table.data('autoSearchApi');
-      if (existing) { existing.destroy(); }
+      const cfg = $.extend(true, {}, DEFAULTS, options);
 
-      const cfg = $.extend({}, DEFAULTS, options);
-
-      // Build placeholder: from option or table attributes
-      const titleAttr =
-        $table.attr('data-search-title') ||
-        $table.data('title') ||
-        $table.attr('aria-label') ||
-        $table.attr('id') || '';
+      // Build placeholder from attributes
+      const titleAttr = $table.attr('data-search-title') || $table.data('title') || $table.attr('aria-label') || $table.attr('id') || '';
       const titleNice = titleAttr.replace(/[-_]+/g, ' ').trim();
       const autoPlaceholder = 'Search ' + (titleNice ? titleNice.toLowerCase() : 'table') + '…';
       const placeholder = cfg.placeholder || autoPlaceholder;
@@ -60,35 +56,49 @@
       let $input = cfg.inputSelector ? $(cfg.inputSelector) : $();
       if ($input.length === 0) {
         $input = $('<input type="search" />').attr('placeholder', placeholder).addClass(cfg.inputClass);
-        if (cfg.placement === 'after') { $table.after($input); } else { $table.before($input); }
+        (cfg.placement === 'after') ? $table.after($input) : $table.before($input);
       } else {
-        // if reusing, only set placeholder if none present
         if (!$input.attr('placeholder')) $input.attr('placeholder', placeholder);
       }
 
-      // Cache rows (tbody only)
-      const $rows = $table.find('tbody > tr');
+      const $thead = $table.children('thead').first();
+      const $tbody = $table.children('tbody').first();
+      const $rows  = $tbody.children('tr');
 
-      // Row text cache (per table)
+      // Determine colspan for the empty row
+      const colCount =
+        (cfg.noResults.colspan !== 'auto' && Number.isInteger(cfg.noResults.colspan))
+          ? cfg.noResults.colspan
+          : ($thead.find('> tr:first > th').length || $tbody.find('> tr:first > td, > tr:first > th').length || 1);
+
+      // Ensure a single "no results" row exists (hidden by default)
+      const EMPTY_ROW_SEL = 'tr.auto-search-empty-row';
+      let $emptyRow = $tbody.find(EMPTY_ROW_SEL);
+      if (cfg.noResults.enabled) {
+        if ($emptyRow.length === 0) {
+          $emptyRow = $('<tr class="auto-search-empty-row" style="display:none;"></tr>');
+          const $td = $('<td>').attr('colspan', colCount).addClass(cfg.noResults.className).text(cfg.noResults.text);
+          $emptyRow.append($td);
+          (cfg.noResults.insertAt === 'tbody-start') ? $tbody.prepend($emptyRow) : $tbody.append($emptyRow);
+        } else {
+          // Update existing if options changed
+          $emptyRow.find('td').attr('colspan', colCount).attr('class', cfg.noResults.className).text(cfg.noResults.text);
+        }
+      }
+
+      // Row text cache
       const rowCache = new WeakMap();
-
       function getRowText($tr) {
         const tr = $tr[0];
         if (rowCache.has(tr)) return rowCache.get(tr);
-
         if (typeof cfg.rowTextGetter === 'function') {
-          const v = String(cfg.rowTextGetter(tr) || '').toUpperCase();
-          rowCache.set(tr, v);
-          return v;
+          const v = String(cfg.rowTextGetter(tr) || '').toUpperCase(); rowCache.set(tr, v); return v;
         }
-
-        // Build searchable text while skipping excluded columns / cells
-        let buf = '';
-        let colIdx = 0;
+        let buf = '', colIdx = 0;
         $tr.children('td,th').each(function () {
           const $cell = $(this);
           const span = parseInt($cell.attr('colspan') || '1', 10);
-          const skipIdx = cfg.excludeColumns.indexOf(colIdx) >= 0;
+          const skipIdx  = cfg.excludeColumns.indexOf(colIdx) >= 0;
           const skipAttr = $cell.is('[data-search-cell="exclude"]');
           if (!skipIdx && !skipAttr) buf += ' ' + $cell.text();
           colIdx += span;
@@ -98,56 +108,62 @@
         return txt;
       }
 
-      function filterRows(queryRaw) {
+      function applyFilter(queryRaw) {
         const q = (queryRaw || '').trim().toUpperCase();
 
-        if (!q) {
-          $rows.each(function () { $(this).toggle(true); });
-          return;
-        }
+        // Hide empty row while filtering
+        if (cfg.noResults.enabled) $emptyRow.hide();
 
+        // Toggle rows
         $rows.each(function () {
           const $tr = $(this);
 
-          // Always-visible rows (e.g., totals)
-          if (cfg.excludeRowSelector && $tr.is(cfg.excludeRowSelector)) {
-            $tr.toggle(true);
-            return;
-          }
+          // Skip our empty row placeholder
+          if ($tr.is(EMPTY_ROW_SEL)) return;
 
-          // Ignore content of some rows for matching (still hide if no match)
+          // Rows always visible (not counted as "results")
+          if (cfg.excludeRowSelector && $tr.is(cfg.excludeRowSelector)) { $tr.show(); return; }
+
+          if (!q) { $tr.show(); return; }
+
           const ignoreContent = cfg.ignoreRowSelector && $tr.is(cfg.ignoreRowSelector);
           const hay = ignoreContent ? '' : getRowText($tr);
-          const match = hay.indexOf(q) >= 0;
-
-          $tr.toggle(match);
+          const isMatch = hay.indexOf(q) >= 0;
+          $tr.toggle(isMatch);
         });
+
+        // Show empty row if no *filterable* rows are visible
+        if (cfg.noResults.enabled) {
+          const anyVisible = $rows
+            .not(EMPTY_ROW_SEL)
+            .filter(function () {
+              const $tr = $(this);
+              if (cfg.excludeRowSelector && $tr.is(cfg.excludeRowSelector)) return false; // don't count fixed rows
+              return $tr.is(':visible');
+            }).length > 0;
+          if (!anyVisible) $emptyRow.show();
+        }
       }
 
-      const onInput = debounce(function () {
-        filterRows($input.val());
-      }, cfg.debounceMs);
-
+      const onInput = debounce(function () { applyFilter($input.val()); }, cfg.debounceMs);
       $input.on('input.autoSearch', onInput);
 
-      // API for later
       const api = {
-        refresh() {
-          rowCache.clear && rowCache.clear(); // WeakMap has no clear; safe no-op
-          filterRows($input.val());
-        },
+        refresh() { applyFilter($input.val()); },
         destroy() {
           $input.off('input.autoSearch', onInput);
           $table.removeData('autoSearchApi');
-          // If the input was auto-created (no selector specified), you may remove it:
           if (!cfg.inputSelector) $input.remove();
+          // Keep/clean empty row? We'll remove it to leave the table pristine:
+          $table.find(EMPTY_ROW_SEL).remove();
         }
       };
 
       $table.data('autoSearchApi', api);
 
-      // Initial run (handles prefilled inputs / back button)
-      filterRows($input.val());
+      // Initial
+      applyFilter($input.val());
     });
   };
 })(jQuery);
+</script>
