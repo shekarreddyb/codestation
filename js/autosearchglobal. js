@@ -1,0 +1,27 @@
+<script>
+  jQuery(function ($) {
+    $('table.searchable').each(function () {
+      const $table = $(this);
+      const id = $table.attr('id');
+      if (!id) return; // skip tables without ID
+
+      const $searchBox = $('#' + id + '-search-box');
+
+      // base options
+      const options = {
+        placeholder: 'Search ' + id.replace(/[-_]+/g, ' ') + '…'
+      };
+
+      // if a matching search box exists, reuse it
+      if ($searchBox.length) {
+        options.inputSelector = $searchBox;
+        if ($searchBox.attr('placeholder')) {
+          options.placeholder = $searchBox.attr('placeholder');
+        }
+      }
+
+      // call plugin once using computed options
+      $table.autoSearch(options);
+    });
+  });
+</script>
