@@ -1,0 +1,5 @@
+SELECT DISTINCT c.*
+FROM Component c
+JOIN ComponentEnvironment ce ON ce.ComponentId = c.Id
+JOIN Environment e ON e.Id = ce.EnvironmentId
+WHERE e.Status <> 'decommissioned';
