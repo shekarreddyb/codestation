@@ -1,0 +1,18 @@
+function runSequentiallyCollect(items, fn) {
+    let results = [];
+    let sequence = $.Deferred().resolve();
+
+    items.forEach(item => {
+        sequence = sequence.then(() => 
+            fn(item).then(res => results.push(res))
+        );
+    });
+
+    return sequence.then(() => results);
+}
+
+
+runSequentiallyCollect(ids, myApiCall)
+    .done(results => {
+        console.log("All results:", results);
+    });
