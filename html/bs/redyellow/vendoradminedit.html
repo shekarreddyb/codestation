@@ -1,0 +1,224 @@
+@model VendorEditVm
+@{
+    ViewData["Title"] = "Admin – Edit Vendor";
+    var emailList = (Model.Emails ?? "")
+        .Split(';', StringSplitOptions.RemoveEmptyEntries)
+        .Select(e => e.Trim())
+        .ToList();
+    var extraSlots = 3;
+}
+
+<section class="container py-4">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <h1 class="h5 mb-1">Admin – Edit Vendor</h1>
+            <div class="small text-muted">All vendor fields are editable on this page.</div>
+        </div>
+        <div>
+            <a asp-controller="Vendors" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary btn-sm me-2">
+                Back to details
+            </a>
+            <a asp-controller="Vendors" asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                Vendor list
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <!-- Left: full admin form -->
+        <div class="col-lg-8">
+            <div class="card border-danger">
+                <div class="card-body">
+                    <div class="alert alert-warning small mb-3">
+                        Changes here affect all systems using this vendor configuration. Proceed carefully.
+                    </div>
+
+                    <form asp-controller="Vendors" asp-action="AdminEdit" method="post" data-email-sync="true">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+
+                        <!-- Core identity -->
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label fw-semibold">Vendor name</label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input asp-for="Live" class="form-check-input" type="checkbox" id="AdminLiveSwitch" />
+                                <label class="form-check-label" for="AdminLiveSwitch">Live</label>
+                            </div>
+                        </div>
+
+                        <hr class="my-3" />
+
+                        <!-- Emails (same widget) -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Emails</label>
+                            <div class="small text-muted mb-1">
+                                One email per line. Clear a line to remove it. Empty lines are ignored.
+                            </div>
+
+                            <div class="row g-2" id="emailList">
+                                @foreach (var email in emailList)
+                                {
+                                    <div class="col-12 col-md-6">
+                                        <input type="email"
+                                               class="form-control form-control-sm"
+                                               name="EmailsArray"
+                                               data-email-item="true"
+                                               value="@email" />
+                                    </div>
+                                }
+
+                                @for (var i = 0; i < extraSlots; i++)
+                                {
+                                    <div class="col-12 col-md-6">
+                                        <input type="email"
+                                               class="form-control form-control-sm"
+                                               name="EmailsArray"
+                                               data-email-item="true"
+                                               value="" />
+                                    </div>
+                                }
+                            </div>
+
+                            <input type="hidden" asp-for="Emails" id="EmailsHidden" />
+                            <div class="form-text">Stored internally as a semicolon-separated list.</div>
+                        </div>
+
+                        <hr class="my-3" />
+
+                        <!-- Notification / routing -->
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Zero order notification</label>
+                                <div class="form-check">
+                                    <input asp-for="ZeroOrderNotification" class="form-check-input" type="checkbox" id="AdminZeroOrderNotification" />
+                                    <label class="form-check-label" for="AdminZeroOrderNotification">Enabled</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Deadline" class="form-label fw-semibold">Deadline</label>
+                                <input asp-for="Deadline" class="form-control" type="time" />
+                                <span asp-validation-for="Deadline" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="AruCallingId" class="form-label fw-semibold">ARU Calling ID</label>
+                                <input asp-for="AruCallingId" class="form-control" />
+                                <span asp-validation-for="AruCallingId" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="AruPhone" class="form-label fw-semibold">ARU Phone</label>
+                                <input asp-for="AruPhone" class="form-control" />
+                                <span asp-validation-for="AruPhone" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="VendorPhone" class="form-label fw-semibold">Vendor phone</label>
+                                <input asp-for="VendorPhone" class="form-control" />
+                                <span asp-validation-for="VendorPhone" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <hr class="my-3" />
+
+                        <!-- Admin-only fields -->
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="CeoAccount" class="form-label fw-semibold">CEO account</label>
+                                <input asp-for="CeoAccount" class="form-control" />
+                                <span asp-validation-for="CeoAccount" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="CeoLocation" class="form-label fw-semibold">CEO location</label>
+                                <input asp-for="CeoLocation" class="form-control" />
+                                <span asp-validation-for="CeoLocation" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="AruPasscode" class="form-label fw-semibold">ARU passcode</label>
+                                <input asp-for="AruPasscode" class="form-control" />
+                                <span asp-validation-for="AruPasscode" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="VaultLeadAdjustment" class="form-label fw-semibold">Vault lead adjustment</label>
+                                <input asp-for="VaultLeadAdjustment" class="form-control" />
+                                <span asp-validation-for="VaultLeadAdjustment" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="VaultCcOffset" class="form-label fw-semibold">Vault CC offset</label>
+                                <input asp-for="VaultCcOffset" class="form-control" />
+                                <span asp-validation-for="VaultCcOffset" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <hr class="my-3" />
+
+                        <!-- Comments -->
+                        <div class="mb-3">
+                            <label asp-for="Comments" class="form-label fw-semibold">Comments</label>
+                            <textarea asp-for="Comments" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Comments" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-3">
+                            <a asp-controller="Vendors" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn btn-cta-red">
+                                Save changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: quick links (optional) -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="h6 mb-2">Quick links</h2>
+                    <div class="list-group list-group-flush">
+                        <a asp-controller="Orders" asp-action="Bulk" asp-route-vendorId="@Model.Id" class="list-group-item small">
+                            Bulk orders
+                        </a>
+                        <a asp-controller="Orders" asp-action="Atm" asp-route-vendorId="@Model.Id" class="list-group-item small">
+                            ATM orders
+                        </a>
+                        <a asp-controller="Vendors" asp-action="Details" asp-route-id="@Model.Id" class="list-group-item small">
+                            View details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            function syncEmails(form) {
+                var values = [];
+                form.querySelectorAll('[data-email-item]').forEach(function (input) {
+                    var v = (input.value || '').trim();
+                    if (v) values.push(v);
+                });
+                var hidden = form.querySelector('#EmailsHidden');
+                if (hidden) {
+                    hidden.value = values.join(';');
+                }
+            }
+
+            document.querySelectorAll('form[data-email-sync="true"]').forEach(function (form) {
+                form.addEventListener('submit', function () { syncEmails(form); });
+            });
+        })();
+    </script>
+}
