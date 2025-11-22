@@ -1,0 +1,223 @@
+<div id="vendor-emails-editor"
+     class="email-list-editor"
+     data-email-hidden="#VendorEmails"
+     data-email-separator=";"  >
+    <label class="form-label fw-semibold">Emails</label>
+    <div class="small text-muted mb-1">
+        Add one email at a time. Invalid emails will be highlighted.
+    </div>
+
+    <!-- Where the plugin will render the email inputs -->
+    <div class="row g-2" data-email-items></div>
+
+    <div class="mt-2">
+        <button type="button"
+                class="btn btn-sm btn-outline-secondary"
+                data-email-add>
+            + Add email
+        </button>
+    </div>
+
+    <!-- Hidden field bound to your model (semicolon/comma-separated) -->
+    <input type="hidden"
+           id="VendorEmails"
+           name="Emails"
+           value="@Model.Emails" />  @* e.g. "a@x.com;b@y.com" *@
+</div>
+
+
+
+
+
+
+<script>
+(function ($) {
+    const DEFAULTS = {
+        hiddenSelector: null,       // selector for hidden field; or read from data-email-hidden
+        separator: ';',             // default separator
+        maxItems: null,             // optional: limit items
+        initialFromHidden: true,    // parse initial value from hidden input
+        minEmptySlots: 1,           // always keep at least this many empty inputs
+        inputPlaceholder: 'Email',  // placeholder for each email box
+        itemsSelector: '[data-email-items]', // container for items
+        addButtonSelector: '[data-email-add]'
+    };
+
+    function EmailListEditor($root, options) {
+        this.$root = $root;
+        this.opts = $.extend({}, DEFAULTS, options || {});
+
+        // Resolve hidden field
+        const hiddenSel = this.opts.hiddenSelector || $root.data('emailHidden');
+        this.$hidden = hiddenSel ? $(hiddenSel) : $root.find('input[type="hidden"][data-email-hidden]');
+        if (!this.$hidden.length) {
+            console.warn('emailListEditor: hidden field not found for', $root[0]);
+            return;
+        }
+
+        // Separator priority: option > data attribute > default
+        this.separator = this.opts.separator || $root.data('emailSeparator') || DEFAULTS.separator;
+
+        // Items container
+        this.$items = $root.find(this.opts.itemsSelector);
+        if (!this.$items.length) {
+            this.$items = $root; // fallback to root if no items container
+        }
+
+        // Add button
+        this.$addBtn = $root.find(this.opts.addButtonSelector);
+
+        this.init();
+    }
+
+    EmailListEditor.prototype.init = function () {
+        const self = this;
+
+        // Build from initial hidden value
+        const initialRaw = this.opts.initialFromHidden ? (this.$hidden.val() || '') : '';
+        const initialList = initialRaw
+            .split(this.separator)
+            .map(v => v.trim())
+            .filter(v => v.length > 0);
+
+        if (initialList.length) {
+            initialList.forEach(v => self.addItem(v));
+        }
+
+        // Ensure at least some empty slots
+        self.ensureEmptySlots();
+
+        // Wire add button
+        if (self.$addBtn.length) {
+            self.$addBtn.on('click.emailListEditor', function () {
+                self.addItem('');
+                self.ensureEmptySlots();
+                self.syncHidden();
+            });
+        }
+
+        // Sync on form submit, just to be safe
+        const $form = self.$root.closest('form');
+        if ($form.length) {
+            $form.on('submit.emailListEditor', function () {
+                self.syncHidden();
+            });
+        }
+
+        // Initial sync
+        self.syncHidden();
+    };
+
+    EmailListEditor.prototype.addItem = function (value) {
+        if (this.opts.maxItems && this.countItems() >= this.opts.maxItems) {
+            return;
+        }
+
+        const self = this;
+        const $row = $('<div class="col-12 col-md-6 mb-2 email-item-wrapper"></div>');
+        const $group = $('<div class="input-group input-group-sm"></div>');
+        const $input = $('<input type="email" class="form-control" autocomplete="off" />')
+            .attr('placeholder', this.opts.inputPlaceholder)
+            .val(value || '');
+        const $btnRemove = $('<button type="button" class="btn btn-outline-secondary">&times;</button>');
+
+        $group.append($input, $btnRemove);
+        $row.append($group);
+        this.$items.append($row);
+
+        // Events
+        $input.on('input.emailListEditor blur.emailListEditor', function () {
+            self.validateInput($input);
+            self.syncHidden();
+        });
+
+        $btnRemove.on('click.emailListEditor', function () {
+            $row.remove();
+            self.ensureEmptySlots();
+            self.syncHidden();
+        });
+
+        // Validate initial value
+        this.validateInput($input);
+    };
+
+    EmailListEditor.prototype.countItems = function () {
+        return this.$items.find('input[type="email"]').length;
+    };
+
+    EmailListEditor.prototype.ensureEmptySlots = function () {
+        const self = this;
+        const minEmpty = self.opts.minEmptySlots;
+
+        const $inputs = self.$items.find('input[type="email"]');
+        const emptyCount = $inputs.toArray().filter(i => (i.value || '').trim().length === 0).length;
+
+        const toAdd = Math.max(0, minEmpty - emptyCount);
+        for (let i = 0; i < toAdd; i++) {
+            self.addItem('');
+        }
+    };
+
+    EmailListEditor.prototype.validateInput = function ($input) {
+        const el = $input[0];
+        const value = (el.value || '').trim();
+
+        if (!value) {
+            $input.removeClass('is-invalid');
+            return;
+        }
+
+        // Use built-in HTML5 email validation if available
+        if (typeof el.checkValidity === 'function' && !el.checkValidity()) {
+            $input.addClass('is-invalid');
+        } else {
+            $input.removeClass('is-invalid');
+        }
+    };
+
+    EmailListEditor.prototype.syncHidden = function () {
+        const values = [];
+        this.$items.find('input[type="email"]').each((_, input) => {
+            const v = (input.value || '').trim();
+            if (v) values.push(v);
+        });
+        this.$hidden.val(values.join(this.separator));
+    };
+
+    // jQuery plugin wrapper
+    $.fn.emailListEditor = function (optionsOrMethod) {
+        return this.each(function () {
+            const $root = $(this);
+            let inst = $root.data('emailListEditor');
+
+            if (!inst && typeof optionsOrMethod !== 'string') {
+                inst = new EmailListEditor($root, optionsOrMethod);
+                $root.data('emailListEditor', inst);
+            }
+
+            if (inst && typeof optionsOrMethod === 'string') {
+                const method = optionsOrMethod;
+                if (typeof inst[method] === 'function') {
+                    inst[method].apply(inst, Array.prototype.slice.call(arguments, 1));
+                }
+            }
+        });
+    };
+})(jQuery);
+</script>
+
+
+
+@section Scripts {
+    <script>
+        jQuery(function ($) {
+            // Basic usage: read config from data attributes
+            $('#vendor-emails-editor').emailListEditor({
+                // Optional overrides:
+                // separator: ';',
+                // minEmptySlots: 2,
+                // inputPlaceholder: 'Enter email'
+            });
+        });
+    </script>
+}
