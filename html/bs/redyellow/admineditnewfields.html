@@ -1,0 +1,87 @@
+<hr class="my-3" />
+
+<!-- Admin-only fields -->
+<h5 class="fw-semibold mb-3">Admin-only Configuration</h5>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="CeoAccount" class="form-label fw-semibold">CEO account</label>
+        <input asp-for="CeoAccount" class="form-control" />
+        <span asp-validation-for="CeoAccount" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="CeoLocation" class="form-label fw-semibold">CEO location</label>
+        <input asp-for="CeoLocation" class="form-control" />
+        <span asp-validation-for="CeoLocation" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="AruPasscode" class="form-label fw-semibold">ARU passcode</label>
+        <input asp-for="AruPasscode" class="form-control" />
+        <span asp-validation-for="AruPasscode" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="VaultLeadAdjustment" class="form-label fw-semibold">Vault lead adjustment</label>
+        <input asp-for="VaultLeadAdjustment" class="form-control" />
+        <span asp-validation-for="VaultLeadAdjustment" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="VaultCcOffset" class="form-label fw-semibold">Vault CC offset</label>
+        <input asp-for="VaultCcOffset" class="form-control" />
+        <span asp-validation-for="VaultCcOffset" class="text-danger small"></span>
+    </div>
+</div>
+
+<hr class="my-4" />
+
+<!-- NEW: Extended Admin Fields -->
+<h5 class="fw-semibold mb-3">Advanced Financial & Routing Settings</h5>
+
+<div class="row g-3">
+
+    <div class="col-md-6">
+        <label asp-for="CcDays" class="form-label fw-semibold">CC Days</label>
+        <input asp-for="CcDays" class="form-control" />
+        <span asp-validation-for="CcDays" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="BuggerMultiplier" class="form-label fw-semibold">Bugger Multiplier</label>
+        <input asp-for="BuggerMultiplier" type="number" step="0.01" class="form-control" />
+        <span asp-validation-for="BuggerMultiplier" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-6">
+        <div class="form-check mt-4">
+            <input asp-for="FedFlag" class="form-check-input" type="checkbox" id="FedFlag" />
+            <label class="form-check-label fw-semibold" for="FedFlag">FED Flag</label>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="VaultLimit" class="form-label fw-semibold">Vault Limit</label>
+        <input asp-for="VaultLimit" type="number" step="0.01" class="form-control" />
+        <span asp-validation-for="VaultLimit" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="VaultECash" class="form-label fw-semibold">Vault eCash</label>
+        <input asp-for="VaultECash" type="number" step="0.01" class="form-control" />
+        <span asp-validation-for="VaultECash" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="VaultBufferLimit" class="form-label fw-semibold">Vault Buffer Limit</label>
+        <input asp-for="VaultBufferLimit" type="number" step="0.01" class="form-control" />
+        <span asp-validation-for="VaultBufferLimit" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="EastFlag" class="form-label fw-semibold">East Flag</label>
+        <input asp-for="EastFlag" type="number" step="0.01" class="form-control" />
+        <span asp-validation-for="EastFlag" class="text-danger small"></span>
+    </div>
+</div>
