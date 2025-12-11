@@ -3,3 +3,20 @@ FROM Component c
 JOIN ComponentEnvironment ce ON ce.ComponentId = c.Id
 JOIN Environment e ON e.Id = ce.EnvironmentId
 WHERE e.Status <> 'decommissioned';
+
+
+
+
+WITH IncompleteItems AS (
+    SELECT  i.DecommissionRequestId
+    FROM    DecommissionRequestItem i
+    WHERE   i.Status <> 'Completed'   -- any item that is NOT completed
+)
+SELECT r.*
+FROM   DecommissionRequest r
+WHERE  r.Status <> 'Completed'        -- parent not completed
+AND    NOT EXISTS (
+           SELECT 1
+           FROM   IncompleteItems x
+           WHERE  x.DecommissionRequestId = r.Id
+       );
