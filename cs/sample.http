@@ -1,0 +1,16 @@
+POST /v1/data/Users/query
+Authorization: Bearer <token-with-scope-data.users.read>
+Content-Type: application/json
+
+{
+  "filter": {
+    "type": "and",
+    "items": [
+      { "type": "pred", "field": "status", "op": "eq", "value": "Active" },
+      { "type": "pred", "field": "createdAt", "op": "gte", "value": "2025-01-01T00:00:00Z" }
+    ]
+  },
+  "select": ["_id","email","status","createdAt"],
+  "sort": [{ "field": "createdAt", "dir": "desc" }],
+  "page": { "limit": 50 }
+}
