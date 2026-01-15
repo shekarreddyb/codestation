@@ -1,0 +1,121 @@
+/* theme.css
+   Override Bootstrap 5 CSS variables here.
+   This file is loaded AFTER Bootstrap, so your changes win.
+*/
+
+/* Light theme (default) */
+:root,
+:root[data-bs-theme="light"] {
+    /* Brand / primary palette */
+    --bs-primary: #0d6efd;
+    --bs-primary-rgb: 13, 110, 253;
+
+    --bs-secondary: #6c757d;
+    --bs-secondary-rgb: 108, 117, 125;
+
+    --bs-success: #198754;
+    --bs-success-rgb: 25, 135, 84;
+
+    --bs-info: #0dcaf0;
+    --bs-info-rgb: 13, 202, 240;
+
+    --bs-warning: #ffc107;
+    --bs-warning-rgb: 255, 193, 7;
+
+    --bs-danger: #dc3545;
+    --bs-danger-rgb: 220, 53, 69;
+
+    --bs-light: #f8f9fa;
+    --bs-light-rgb: 248, 249, 250;
+
+    --bs-dark: #212529;
+    --bs-dark-rgb: 33, 37, 41;
+
+    /* Body */
+    --bs-body-bg: #f5f5f7;
+    --bs-body-bg-rgb: 245, 245, 247;
+    --bs-body-color: #212529;
+    --bs-body-color-rgb: 33, 37, 41;
+
+    /* Borders / subtle surfaces */
+    --bs-border-color: #dee2e6;
+    --bs-tertiary-bg: #f8f9fa;
+
+    /* Links */
+    --bs-link-color: var(--bs-primary);
+    --bs-link-hover-color: #0a58ca;
+    --bs-link-color-rgb: var(--bs-primary-rgb);
+
+    /* Navbar / sidebar tweaks (optional) */
+    --app-sidebar-bg: #f8f9fa;
+    --app-header-bg: #ffffff;
+}
+
+body {
+    background-color: var(--bs-body-bg);
+}
+
+/* Make sidebar use its own var – easy to change for branding */
+.bg-body-subtle {
+    background-color: var(--app-sidebar-bg) !important;
+}
+
+/* Header background override */
+header.navbar.bg-body {
+    background-color: var(--app-header-bg) !important;
+}
+
+/* Dark theme */
+:root[data-bs-theme="dark"] {
+    --bs-body-bg: #121212;
+    --bs-body-bg-rgb: 18, 18, 18;
+    --bs-body-color: #e9ecef;
+    --bs-body-color-rgb: 233, 236, 239;
+
+    --bs-border-color: #343a40;
+    --bs-tertiary-bg: #202020;
+
+    --bs-primary: #4dabf7;
+    --bs-primary-rgb: 77, 171, 247;
+
+    --bs-secondary: #868e96;
+    --bs-secondary-rgb: 134, 142, 150;
+
+    --bs-success: #51cf66;
+    --bs-success-rgb: 81, 207, 102;
+
+    --bs-info: #15aabf;
+    --bs-info-rgb: 21, 170, 191;
+
+    --bs-warning: #fcc419;
+    --bs-warning-rgb: 252, 196, 25;
+
+    --bs-danger: #ff6b6b;
+    --bs-danger-rgb: 255, 107, 107;
+
+    --bs-link-color: var(--bs-primary);
+    --bs-link-hover-color: #74c0fc;
+
+    --app-sidebar-bg: #181818;
+    --app-header-bg: #181818;
+}
+
+/* Optional: subtle card shadows and rounded corners (edit as you like) */
+.card {
+    border-radius: 0.5rem;
+}
+
+/* Tables: keep header slightly elevated */
+.table thead th {
+    border-bottom-width: 1px;
+}
+
+/* Make sticky header look nice on scroll */
+header.navbar {
+    backdrop-filter: blur(8px);
+}
+
+/* Small utility for pointer cursor on clickable cards */
+.cursor-pointer {
+    cursor: pointer;
+}
