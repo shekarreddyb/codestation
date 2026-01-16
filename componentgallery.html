@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8">
+    <title>Advanced Enterprise UI Patterns - Bootstrap 5</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS (latest 5.x) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+          crossorigin="anonymous">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+          rel="stylesheet">
+
+    <style>
+        :root,
+        :root[data-bs-theme="light"] {
+            --bs-body-bg: #f5f5f7;
+            --bs-body-color: #212529;
+            --bs-border-color: #dee2e6;
+            --app-sidebar-bg: #f8f9fa;
+            --app-header-bg: #ffffff;
+        }
+
+        :root[data-bs-theme="dark"] {
+            --bs-body-bg: #111315;
+            --bs-body-color: #e9ecef;
+            --bs-border-color: #343a40;
+            --app-sidebar-bg: #171a1d;
+            --app-header-bg: #171a1d;
+            --bs-primary: #4dabf7;
+            --bs-primary-rgb: 77, 171, 247;
+        }
+
+        body {
+            background-color: var(--bs-body-bg);
+        }
+
+        header.navbar {
+            background-color: var(--app-header-bg) !important;
+            backdrop-filter: blur(8px);
+        }
+
+        .app-sidebar {
+            background-color: var(--app-sidebar-bg);
+        }
+
+        .app-main {
+            overflow-x: hidden;
+        }
+
+        .section-title {
+            font-size: .9rem;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            color: var(--bs-secondary);
+            margin-bottom: .25rem;
+        }
+
+        .cursor-pointer {
+            cursor: pointer;
+        }
+
+        /* Global status strip */
+        .status-strip {
+            position: sticky;
+            top: 0;
+            z-index: 1028;
+        }
+
+        /* Work queue */
+        .queue-list {
+            max-height: 380px;
+            overflow-y: auto;
+        }
+
+        .queue-detail {
+            min-height: 380px;
+        }
+
+        /* Bulk edit preview */
+        .impact-pill {
+            border-radius: 999px;
+            padding: .2rem .6rem;
+            font-size: .7rem;
+        }
+
+        .impact-pill-added {
+            background-color: rgba(25,135,84,.12);
+            color: #0f5132;
+        }
+
+        .impact-pill-removed {
+            background-color: rgba(220,53,69,.12);
+            color: #842029;
+        }
+
+        .impact-pill-changed {
+            background-color: rgba(255,193,7,.16);
+            color: #664d03;
+        }
+
+        [data-bs-theme="dark"] .impact-pill-added {
+            color: #75b798;
+        }
+
+        [data-bs-theme="dark"] .impact-pill-removed {
+            color: #ffb3c0;
+        }
+
+        [data-bs-theme="dark"] .impact-pill-changed {
+            color: #ffda6a;
+        }
+
+        /* Compare view */
+        .compare-col {
+            border-radius: .5rem;
+        }
+
+        .diff-added {
+            background-color: rgba(25,135,84,.08);
+        }
+
+        .diff-removed {
+            background-color: rgba(220,53,69,.08);
+        }
+
+        .diff-changed {
+            background-color: rgba(13,110,253,.08);
+        }
+
+        /* Change calendar */
+        .change-calendar {
+            border-radius: .5rem;
+            overflow: hidden;
+        }
+
+        .change-day {
+            min-height: 120px;
+            border: 1px solid var(--bs-border-color);
+            padding: .35rem .4rem;
+            display: flex;
+            flex-direction: column;
+            gap: .25rem;
+            font-size: .75rem;
+        }
+
+        .change-day-header {
+            font-weight: 600;
+            font-size: .75rem;
+        }
+
+        .change-pill {
+            border-radius: 999px;
+            padding: .15rem .45rem;
+            display: inline-flex;
+            align-items: center;
+            gap: .25rem;
+        }
+
+        /* Health heatmap */
+        .heatmap-grid {
+            border-radius: .5rem;
+            overflow: hidden;
+        }
+
+        .heat-row-label {
+            width: 160px;
+            font-size: .8rem;
+        }
+
+        .heat-cell {
+            width: 24px;
+            height: 24px;
+            border-radius: .2rem;
+            border: 1px solid transparent;
+        }
+
+        .heat-ok {
+            background-color: #19875433;
+        }
+
+        .heat-warn {
+            background-color: #ffc10755;
+        }
+
+        .heat-bad {
+            background-color: #dc354566;
+        }
+
+        /* Risk matrix */
+        .risk-matrix {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .risk-matrix td,
+        .risk-matrix th {
+            border: 1px solid var(--bs-border-color);
+            text-align: center;
+            padding: .45rem;
+            font-size: .8rem;
+        }
+
+        .risk-low {
+            background-color: #19875422;
+        }
+
+        .risk-med {
+            background-color: #ffc10733;
+        }
+
+        .risk-high {
+            background-color: #dc354533;
+        }
+
+        /* Feature flag matrix */
+        .flag-matrix {
+            font-size: .85rem;
+        }
+
+        /* What-if / simulation */
+        .delta-good {
+            color: #198754;
+        }
+
+        .delta-bad {
+            color: #dc3545;
+        }
+
+        .delta-neutral {
+            color: var(--bs-secondary);
+        }
+
+        /* Access review */
+        .access-table th,
+        .access-table td {
+            vertical-align: middle;
+        }
+
+        /* Command palette */
+        .command-modal .modal-dialog {
+            max-width: 600px;
+        }
+
+        .command-modal .command-list {
+            max-height: 260px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<!-- HEADER -->
+<header class="navbar navbar-expand-lg border-bottom sticky-top">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+            <i class="bi bi-diagram-3-fill"></i>
+            <span>Advanced Enterprise UI</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#topNav" aria-controls="topNav" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="topNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 small">
+                <li class="nav-item"><a class="nav-link active" href="#section-workqueue">Work Queue</a></li>
+                <li class="nav-item"><a class="nav-link" href="#section-bulkedit">Bulk Edit</a></li>
+                <li class="nav-item"><a class="nav-link" href="#section-compare">Compare</a></li>
+                <li class="nav-item"><a class="nav-link" href="#section-calendar">Change Calendar</a></li>
+                <li class="nav-item"><a class="nav-link" href="#section-health">Health Heatmap</a></li>
+                <li class="nav-item"><a class="nav-link" href="#section-risk">Risk Matrix</a></li>
+                <li class="nav-item"><a class="nav-link" href="#section-flags">Feature Flags</a></li>
+                <li class="nav-item"><a class="nav-link" href="#section-whatif">What-if</a></li>
+                <li class="nav-item"><a class="nav-link" href="#section-access">Access Review</a></li>
+            </ul>
+
+            <!-- Command palette hint -->
+            <div class="me-3 small text-body-secondary d-none d-md-flex align-items-center">
+                <i class="bi bi-command me-1"></i> Press <kbd>Ctrl</kbd> + <kbd>K</kbd>
+            </div>
+
+            <!-- Dark mode toggle -->
+            <div class="form-check form-switch me-3">
+                <input class="form-check-input" type="checkbox" role="switch" id="themeToggle">
+                <label class="form-check-label cursor-pointer" for="themeToggle">
+                    <i class="bi bi-moon-stars-fill" id="themeToggleIcon"></i>
+                </label>
+            </div>
+
+            <!-- User menu -->
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-2"
+                        type="button" data-bs-toggle="dropdown">
+                    <i class="bi bi-person-circle fs-5"></i>
+                    <span>ops.admin</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><h6 class="dropdown-header">Signed in as<br><strong>ops.admin</strong></h6></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Profile</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Preferences</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right me-2"></i>Sign out</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- GLOBAL STATUS STRIP -->
+<div class="status-strip">
+    <div class="bg-warning-subtle border-bottom py-1 px-3 small d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge rounded-pill text-bg-warning">
+                <span class="d-inline-block rounded-circle me-1" style="width:8px;height:8px;background:#ffc107;"></span>
+                Degraded
+            </span>
+            <span>
+                Payments API latency elevated for the last 12 minutes.
+                <a href="#section-health" class="text-reset text-decoration-underline">View health heatmap</a>
+            </span>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-warning">
+                <i class="bi bi-bell"></i> Mute for 30 min
+            </button>
+            <button class="btn btn-sm btn-outline-secondary d-none d-md-inline-flex">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid flex-grow-1">
+    <div class="row">
+        <!-- SIDEBAR -->
+        <aside class="col-md-3 col-lg-2 border-end app-sidebar d-none d-md-block">
+            <div class="p-3 small">
+                <div class="section-title">Layouts</div>
+                <div class="list-group list-group-flush mb-3">
+                    <a href="#section-workqueue" class="list-group-item list-group-item-action active">
+                        <i class="bi bi-inboxes me-2"></i> Work Queue / Inbox
+                    </a>
+                    <a href="#section-bulkedit" class="list-group-item list-group-item-action">
+                        <i class="bi bi-pencil-square me-2"></i> Bulk Edit Preview
+                    </a>
+                    <a href="#section-compare" class="list-group-item list-group-item-action">
+                        <i class="bi bi-layout-split me-2"></i> Side-by-Side Compare
+                    </a>
+                    <a href="#section-calendar" class="list-group-item list-group-item-action">
+                        <i class="bi bi-calendar-range me-2"></i> Change Calendar
+                    </a>
+                    <a href="#section-health" class="list-group-item list-group-item-action">
+                        <i class="bi bi-clipboard2-pulse me-2"></i> Health Heatmap
+                    </a>
+                    <a href="#section-risk" class="list-group-item list-group-item-action">
+                        <i class="bi bi-exclamation-triangle me-2"></i> Risk Matrix
+                    </a>
+                    <a href="#section-flags" class="list-group-item list-group-item-action">
+                        <i class="bi bi-toggle2-on me-2"></i> Feature Flags
+                    </a>
+                    <a href="#section-whatif" class="list-group-item list-group-item-action">
+                        <i class="bi bi-graph-up-arrow me-2"></i> What-if Simulation
+                    </a>
+                    <a href="#section-access" class="list-group-item list-group-item-action">
+                        <i class="bi bi-people-lock me-2"></i> Access Review
+                    </a>
+                </div>
+
+                <div class="section-title">Power tools</div>
+                <div class="list-group list-group-flush">
+                    <a href="#section-command" class="list-group-item list-group-item-action">
+                        <i class="bi bi-command me-2"></i> Command Palette
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="col-md-9 col-lg-10 px-3 py-3 app-main">
+
+            <!-- WORK QUEUE / INBOX -->
+            <section id="section-workqueue" class="mb-4">
+                <p class="section-title mb-0">Work queue / inbox</p>
+                <h1 class="h4 mb-3">Approval and triage inbox</h1>
+
+                <div class="row g-3">
+                    <!-- Queue list -->
+                    <div class="col-lg-4">
+                        <div class="card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span>My Queue</span>
+                                <span class="badge text-bg-secondary">12 items</span>
+                            </div>
+                            <div class="card-body p-0 queue-list">
+                                <div class="list-group list-group-flush">
+                                    <button class="list-group-item list-group-item-action active">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <div class="fw-semibold">
+                                                    Access request: Reporting Admin
+                                                </div>
+                                                <div class="small text-body-secondary">
+                                                    User: alice • App: Reporting
+                                                </div>
+                                                <div class="small">
+                                                    <span class="badge text-bg-warning">Pending you</span>
+                                                    <span class="badge text-bg-secondary ms-1">SLA: 2h</span>
+                                                </div>
+                                            </div>
+                                            <div class="small text-end text-body-secondary">
+                                                8 min ago
+                                            </div>
+                                        </div>
+                                    </button>
+
+                                    <button class="list-group-item list-group-item-action">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <div class="fw-semibold">
+                                                    Change: Increase API rate limit
+                                                </div>
+                                                <div class="small text-body-secondary">
+                                                    Owner: john.doe • Env: Prod
+                                                </div>
+                                                <div class="small">
+                                                    <span class="badge text-bg-danger">High risk</span>
+                                                </div>
+                                            </div>
+                                            <div class="small text-end text-body-secondary">
+                                                20 min ago
+                                            </div>
+                                        </div>
+                                    </button>
+
+                                    <button class="list-group-item list-group-item-action">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <div class="fw-semibold">
+                                                    Exception: Policy violation (S3 public)
+                                                </div>
+                                                <div class="small text-body-secondary">
+                                                    Resource: analytics-bucket
+                                                </div>
+                                                <div class="small">
+                                                    <span class="badge text-bg-danger">Critical</span>
+                                                    <span class="badge text-bg-secondary ms-1">Auto-fix available</span>
+                                                </div>
+                                            </div>
+                                            <div class="small text-end text-body-secondary">
+                                                35 min ago
+                                            </div>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detail -->
+                    <div class="col-lg-8">
+                        <div class="card h-100 queue-detail">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="small text-body-secondary">Selected item</div>
+                                    <div class="fw-semibold">
+                                        Access request: Reporting Admin
+                                        <span class="badge text-bg-warning ms-2">Awaiting approval</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-arrow-repeat"></i> Refresh
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-x-circle"></i> Reject
+                                    </button>
+                                    <button class="btn btn-sm btn-success">
+                                        <i class="bi bi-check2-circle"></i> Approve
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body small">
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <div class="text-body-secondary">User</div>
+                                        <div><strong>alice</strong></div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="text-body-secondary">Application</div>
+                                        <div>Reporting</div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="text-body-secondary">Requested role</div>
+                                        <div><span class="badge text-bg-primary">Reporting Admin</span></div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <div class="text-body-secondary">Justification</div>
+                                        <div>"Need to manage report schedules for finance."</div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="text-body-secondary">Requested by</div>
+                                        <div>alice • Self-service</div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="text-body-secondary">Requested on</div>
+                                        <div>15 Jan 2026, 10:02 AM</div>
+                                    </div>
+                                </div>
+
+                                <h6 class="border-bottom pb-1">Context snapshot</h6>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <ul class="list-unstyled mb-0">
+                                            <li class="mb-1">
+                                                <i class="bi bi-dot"></i> User has
+                                                <span class="badge text-bg-secondary">Read-only</span> access today.
+                                            </li>
+                                            <li class="mb-1">
+                                                <i class="bi bi-dot"></i> No prior escalations for this user.
+                                            </li>
+                                            <li class="mb-1">
+                                                <i class="bi bi-dot"></i> Role grants <strong>export</strong> and
+                                                <strong>schedule</strong> permissions.
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="border rounded p-2">
+                                            <div class="fw-semibold mb-1">Risk hints</div>
+                                            <div class="small text-body-secondary">
+                                                • Admins can create public links<br>
+                                                • Exports may contain PII<br>
+                                                • Consider temporary access & review date
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h6 class="border-bottom pb-1">Your decision</h6>
+                                <div class="row g-2 align-items-center">
+                                    <div class="col-md-8">
+                                        <textarea class="form-control" rows="2"
+                                                  placeholder="Add an approval note (optional)..."></textarea>
+                                    </div>
+                                    <div class="col-md-4 d-flex gap-2 justify-content-end">
+                                        <button class="btn btn-sm btn-outline-danger w-50">
+                                            Reject
+                                        </button>
+                                        <button class="btn btn-sm btn-success w-50">
+                                            Approve
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="my-4">
+
+            <!-- BULK EDIT + PREVIEW -->
+            <section id="section-bulkedit" class="mb-4">
+                <p class="section-title mb-0">Bulk edit preview</p>
+                <h2 class="h5 mb-3">Bulk status update with impact summary</h2>
+
+                <div class="card mb-2">
+                    <div class="card-header d-flex justify-content-between align-items-center small">
+                        <div>
+                            Selected <strong>37</strong> items
+                            <span class="text-body-secondary">• Changes will apply to all selected records</span>
+                        </div>
+                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#bulkEditModal">
+                            <i class="bi bi-pencil-square me-1"></i>Bulk update status
+                        </button>
+                    </div>
+                    <div class="card-body small">
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0">
+                                <thead class="table-light">
+                                <tr>
+                                    <th>Type</th>
+                                    <th>ID</th>
+                                    <th>Summary</th>
+                                    <th>Current status</th>
+                                    <th>Priority</th>
+                                    <th>Owner</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td><span class="badge text-bg-primary">Change</span></td>
+                                    <td>CHG-20011</td>
+                                    <td>Upgrade Redis cluster to 7.x</td>
+                                    <td><span class="badge text-bg-warning">Pending approval</span></td>
+                                    <td>High</td>
+                                    <td>Jane Smith</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge text-bg-primary">Change</span></td>
+                                    <td>CHG-20012</td>
+                                    <td>Enable caching for Billing API</td>
+                                    <td><span class="badge text-bg-warning">Pending approval</span></td>
+                                    <td>Medium</td>
+                                    <td>John Doe</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge text-bg-secondary">Service</span></td>
+                                    <td>SR-33001</td>
+                                    <td>Grant Reporting access to finance</td>
+                                    <td><span class="badge text-bg-warning">Pending approval</span></td>
+                                    <td>Low</td>
+                                    <td>Service Desk</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="small text-body-secondary">
+                    This pattern: select many items, open a bulk edit modal, show what will change and
+                    a human-readable impact summary before confirming.
+                </div>
+            </section>
+
+            <hr class="my-4">
+
+            <!-- SIDE-BY-SIDE COMPARE -->
+            <section id="section-compare" class="mb-4">
+                <p class="section-title mb-0">Side-by-side compare</p>
+                <h2 class="h5 mb-3">Compare environments / versions</h2>
+
+                <div class="card mb-3">
+                    <div class="card-body small">
+                        <div class="row g-3 align-items-end mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Left side</label>
+                                <select class="form-select form-select-sm">
+                                    <option>Prod - Current</option>
+                                    <option>Prod - Previous</option>
+                                    <option>QA - Baseline</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Right side</label>
+                                <select class="form-select form-select-sm">
+                                    <option>Prod - Proposed changes</option>
+                                    <option>Prod - Current</option>
+                                    <option>QA - Baseline</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 d-flex justify-content-end gap-2">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="compareDiffOnly">
+                                    <label class="form-check-label" for="compareDiffOnly">
+                                        Show differences only
+                                    </label>
+                                </div>
+                                <button class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-arrow-repeat"></i> Refresh
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="border p-2 rounded compare-col">
+                                    <div class="fw-semibold mb-1">
+                                        Prod - Current
+                                        <span class="badge text-bg-secondary ms-1">v1.2.0</span>
+                                    </div>
+                                    <div class="small text-body-secondary mb-2">
+                                        Deployed: 08 Jan 2026 • Owner: platform-team
+                                    </div>
+
+                                    <dl class="row mb-0 small">
+                                        <dt class="col-5">API base URL</dt>
+                                        <dd class="col-7 text-truncate">https://api.example.com</dd>
+
+                                        <dt class="col-5">Rate limit</dt>
+                                        <dd class="col-7 diff-changed">500 requests/min</dd>
+
+                                        <dt class="col-5">Timeout</dt>
+                                        <dd class="col-7 diff-changed">15 seconds</dd>
+
+                                        <dt class="col-5">Retry policy</dt>
+                                        <dd class="col-7">3 attempts</dd>
+
+                                        <dt class="col-5">Feature: Smart cache</dt>
+                                        <dd class="col-7 diff-removed">Disabled</dd>
+
+                                        <dt class="col-5">Logging level</dt>
+                                        <dd class="col-7">Warning</dd>
+                                    </dl>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="border p-2 rounded compare-col">
+                                    <div class="fw-semibold mb-1">
+                                        Prod - Proposed changes
+                                        <span class="badge text-bg-info ms-1">v1.3.0</span>
+                                    </div>
+                                    <div class="small text-body-secondary mb-2">
+                                        Planned: 15 Jan 2026 • Change: CHG-20011
+                                    </div>
+
+                                    <dl class="row mb-0 small">
+                                        <dt class="col-5">API base URL</dt>
+                                        <dd class="col-7 text-truncate">https://api.example.com</dd>
+
+                                        <dt class="col-5">Rate limit</dt>
+                                        <dd class="col-7 diff-changed">
+                                            1,000 requests/min
+                                            <span class="delta-bad ms-1">
+                                                <i class="bi bi-arrow-up"></i> more risk
+                                            </span>
+                                        </dd>
+
+                                        <dt class="col-5">Timeout</dt>
+                                        <dd class="col-7 diff-changed">
+                                            20 seconds
+                                            <span class="delta-neutral ms-1">
+                                                <i class="bi bi-arrow-up"></i> slower fail
+                                            </span>
+                                        </dd>
+
+                                        <dt class="col-5">Retry policy</dt>
+                                        <dd class="col-7">3 attempts</dd>
+
+                                        <dt class="col-5">Feature: Smart cache</dt>
+                                        <dd class="col-7 diff-added">
+                                            Enabled
+                                            <span class="delta-good ms-1">
+                                                <i class="bi bi-arrow-down"></i> less load
+                                            </span>
+                                        </dd>
+
+                                        <dt class="col-5">Logging level</dt>
+                                        <dd class="col-7">
+                                            Info
+                                            <span class="delta-good ms-1">
+                                                <i class="bi bi-graph-up"></i> more visibility
+                                            </span>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="small text-body-secondary">
+                    This layout is a generic left/right compare: envs, versions, configs, etc.,
+                    with visual diff highlighting and small textual hints.
+                </div>
+            </section>
+
+            <hr class="my-4">
+
+            <!-- CHANGE CALENDAR -->
+            <section id="section-calendar" class="mb-4">
+                <p class="section-title mb-0">Change calendar</p>
+                <h2 class="h5 mb-3">Weekly change / maintenance overview</h2>
+
+                <div class="card mb-2">
+                    <div class="card-body small">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <button class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-chevron-left"></i>
+                                </button>
+                                <span class="fw-semibold">Week of 13–19 Jan 2026</span>
+                                <button class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-chevron-right"></i>
+                                </button>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <span class="badge text-bg-primary">Prod</span>
+                                <span class="badge text-bg-secondary">Non-prod</span>
+                                <span class="badge text-bg-danger">High risk</span>
+                            </div>
+                        </div>
+
+                        <div class="change-calendar">
+                            <div class="row g-0">
+                                <!-- Mon -->
+                                <div class="col">
+                                    <div class="change-day">
+                                        <div class="change-day-header">Mon 13</div>
+                                        <div class="change-pill bg-secondary-subtle">
+                                            <span class="badge text-bg-secondary">NP</span>
+                                            Billing API load test
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Tue -->
+                                <div class="col">
+                                    <div class="change-day">
+                                        <div class="change-day-header">Tue 14</div>
+                                        <div class="change-pill bg-primary-subtle">
+                                            <span class="badge text-bg-primary">Prod</span>
+                                            Auth service patch
+                                        </div>
+                                        <div class="change-pill bg-danger-subtle">
+                                            <span class="badge text-bg-danger">Risk</span>
+                                            DB schema migration
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Wed -->
+                                <div class="col">
+                                    <div class="change-day">
+                                        <div class="change-day-header">Wed 15</div>
+                                        <div class="change-pill bg-secondary-subtle">
+                                            <span class="badge text-bg-secondary">NP</span>
+                                            Feature toggles rollout
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Thu -->
+                                <div class="col">
+                                    <div class="change-day">
+                                        <div class="change-day-header">Thu 16</div>
+                                        <div class="change-pill bg-primary-subtle">
+                                            <span class="badge text-bg-primary">Prod</span>
+                                            Cache layer upgrade
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Fri -->
+                                <div class="col">
+                                    <div class="change-day">
+                                        <div class="change-day-header">Fri 17</div>
+                                        <div class="change-pill bg-secondary-subtle">
+                                            <span class="badge text-bg-secondary">NP</span>
+                                            Sandbox refresh
+                                        </div>
+                                        <div class="change-pill bg-danger-subtle">
+                                            <span class="badge text-bg-danger">Risk</span>
+                                            Payments DB maintenance
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Sat -->
+                                <div class="col">
+                                    <div class="change-day">
+                                        <div class="change-day-header">Sat 18</div>
+                                        <div class="change-pill bg-primary-subtle">
+                                            <span class="badge text-bg-primary">Prod</span>
+                                            Overnight infra patching
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Sun -->
+                                <div class="col">
+                                    <div class="change-day">
+                                        <div class="change-day-header">Sun 19</div>
+                                        <div class="change-pill bg-secondary-subtle">
+                                            <span class="badge text-bg-secondary">NP</span>
+                                            DR drill
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-2 small text-body-secondary">
+                            Each pill can be clickable to open the full change record,
+                            with filters for environment, risk, app, etc.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="my-4">
+
+            <!-- HEALTH HEATMAP -->
+            <section id="section-health" class="mb-4">
+                <p class="section-title mb-0">Health heatmap</p>
+                <h2 class="h5 mb-3">Service health for last 7 days</h2>
+
+                <div class="card mb-2">
+                    <div class="card-body small">
+                        <div class="d-flex justify-content-between mb-2">
+                            <div>
+                                <span class="fw-semibold">Key services</span>
+                                <span class="text-body-secondary ms-1">• Green = healthy, Red = major incidents</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="heat-cell heat-ok d-inline-block"></span> OK
+                                <span class="heat-cell heat-warn d-inline-block"></span> Minor
+                                <span class="heat-cell heat-bad d-inline-block"></span> Major
+                            </div>
+                        </div>
+
+                        <div class="heatmap-grid border rounded p-2">
+                            <div class="d-flex mb-1 ms-5">
+                                <div class="flex-grow-1 d-flex justify-content-around">
+                                    <span class="text-body-secondary">D-6</span>
+                                    <span class="text-body-secondary">D-5</span>
+                                    <span class="text-body-secondary">D-4</span>
+                                    <span class="text-body-secondary">D-3</span>
+                                    <span class="text-body-secondary">D-2</span>
+                                    <span class="text-body-secondary">D-1</span>
+                                    <span class="text-body-secondary">Today</span>
+                                </div>
+                            </div>
+
+                            <!-- Payments -->
+                            <div class="d-flex align-items-center mb-1">
+                                <div class="heat-row-label text-body-secondary">Payments API</div>
+                                <div class="flex-grow-1 d-flex justify-content-around">
+                                    <span class="heat-cell heat-ok"></span>
+                                    <span class="heat-cell heat-ok"></span>
+                                    <span class="heat-cell heat-ok"></span>
+                                    <span class="heat-cell heat-warn"></span>
+                                    <span class="heat-cell heat-bad"></span>
+                                    <span class="heat-cell heat-ok"></span>
+                                    <span class="heat-cell heat-warn"></span>
+                                </div>
+                            </div>
+
+                            <!-- Billing -->
+                            <div class="d-flex align-items-center mb-1">
+                                <div class="heat-row-label text-body-secondary">Billing Service</div>
+                                <div class="flex-grow-1 d-flex justify-content-around">
+                                    <span class="heat-cell heat-ok"></span>
+                                    <span class="heat-cell heat-ok"></span>
+                                    <span class="heat-cell heat-ok"></span>
+                                    <span class="heat-cell heat-ok"></span>
+                                    <span class="heat-cell heat-ok"></span>
+                                    <span class="heat-cell heat-ok"></span>
+                                    <span class="heat-cell heat-ok"></span>
+                                </div>
+                            </div>
+
+                            <!-- Reporting -->
+                            <div class="d-flex align-items-center mb-1">
+                                <div class="heat-row-label text-body-secondary">Reporting</div>
+                                <div class="flex-grow-1 d-flex justify-content-around">
+                                    <span class="heat-cell heat-warn"></span>
+                                    <span class="heat-cell heat-warn"></span>
+                                    <span class="heat-cell heat-ok"></span>
+                                    <span class="heat-cell heat-ok"></span>
+                                    <span class="heat-cell heat-ok"></span>
+                                    <span class="heat-cell heat-ok"></span>
+                                    <span class="heat-cell heat-ok"></span>
+                                </div>
+                            </div>
+
+                            <!-- Notification Hub -->
+                            <div class="d-flex align-items-center">
+                                <div class="heat-row-label text-body-secondary">Notification Hub</div>
+                                <div class="flex-grow-1 d-flex justify-content-around">
+                                    <span class="heat-cell heat-ok"></span>
+                                    <span class="heat-cell heat-ok"></span>
+                                    <span class="heat-cell heat-bad"></span>
+                                    <span class="heat-cell heat-ok"></span>
+                                    <span class="heat-cell heat-ok"></span>
+                                    <span class="heat-cell heat-ok"></span>
+                                    <span class="heat-cell heat-ok"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="my-4">
+
+            <!-- RISK MATRIX -->
+            <section id="section-risk" class="mb-4">
+                <p class="section-title mb-0">Risk matrix</p>
+                <h2 class="h5 mb-3">Likelihood vs impact risk overview</h2>
+
+                <div class="row g-3">
+                    <div class="col-lg-8">
+                        <div class="card mb-2">
+                            <div class="card-body small">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="fw-semibold">Risk register</span>
+                                    <span class="text-body-secondary">Bubble size ≈ number of items in cell</span>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="risk-matrix mb-0">
+                                        <thead>
+                                        <tr>
+                                            <th rowspan="2" class="align-middle">Likelihood →</th>
+                                            <th>Low</th>
+                                            <th>Medium</th>
+                                            <th>High</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-body-secondary">L</th>
+                                            <th class="text-body-secondary">M</th>
+                                            <th class="text-body-secondary">H</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <th scope="row" class="text-start">High impact</th>
+                                            <td class="risk-med">
+                                                <div>2 items</div>
+                                                <div class="small text-body-secondary">
+                                                    DR gaps
+                                                </div>
+                                            </td>
+                                            <td class="risk-high">
+                                                <div>4 items</div>
+                                                <div class="small text-body-secondary">
+                                                    Payments, PII exposure
+                                                </div>
+                                            </td>
+                                            <td class="risk-high">
+                                                <div>1 item</div>
+                                                <div class="small text-body-secondary">
+                                                    Single-region prod
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" class="text-start">Medium impact</th>
+                                            <td class="risk-low">
+                                                <div>3 items</div>
+                                                <div class="small text-body-secondary">
+                                                    Logging gaps
+                                                </div>
+                                            </td>
+                                            <td class="risk-med">
+                                                <div>5 items</div>
+                                                <div class="small text-body-secondary">
+                                                    Alerts tuning
+                                                </div>
+                                            </td>
+                                            <td class="risk-med">
+                                                <div>2 items</div>
+                                                <div class="small text-body-secondary">
+                                                    Report latency
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" class="text-start">Low impact</th>
+                                            <td class="risk-low">
+                                                <div>6 items</div>
+                                                <div class="small text-body-secondary">
+                                                    UX issues
+                                                </div>
+                                            </td>
+                                            <td class="risk-low">
+                                                <div>3 items</div>
+                                                <div class="small text-body-secondary">
+                                                    Low-usage features
+                                                </div>
+                                            </td>
+                                            <td class="risk-med">
+                                                <div>1 item</div>
+                                                <div class="small text-body-secondary">
+                                                    Billing exports delay
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Risk details -->
+                    <div class="col-lg-4">
+                        <div class="card small">
+                            <div class="card-header">
+                                <i class="bi bi-list-ul me-2"></i>High priority risks
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-2">
+                                        <strong>R-001</strong> – Single-region prod
+                                        <div class="text-body-secondary">
+                                            Impact: High • Likelihood: High
+                                        </div>
+                                    </li>
+                                    <li class="mb-2">
+                                        <strong>R-004</strong> – PII in logs
+                                        <div class="text-body-secondary">
+                                            Impact: High • Likelihood: Medium
+                                        </div>
+                                    </li>
+                                    <li class="mb-2">
+                                        <strong>R-008</strong> – Weak DR drill coverage
+                                        <div class="text-body-secondary">
+                                            Impact: High • Likelihood: Medium
+                                        </div>
+                                    </li>
+                                </ul>
+                                <button class="btn btn-sm btn-outline-secondary mt-2">
+                                    View full risk register
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="my-4">
+
+            <!-- FEATURE FLAGS -->
+            <section id="section-flags" class="mb-4">
+                <p class="section-title mb-0">Feature flag matrix</p>
+                <h2 class="h5 mb-3">Feature toggles across environments</h2>
+
+                <div class="card mb-2">
+                    <div class="card-body small">
+                        <div class="d-flex justify-content-between mb-2">
+                            <div>
+                                <span class="fw-semibold">Feature flags</span>
+                                <span class="text-body-secondary ms-1">• Toggle per environment or copy configs</span>
+                            </div>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-secondary">
+                                    <i class="bi bi-files"></i> Copy from QA to Prod
+                                </button>
+                                <button class="btn btn-outline-secondary">
+                                    <i class="bi bi-download"></i> Export
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive flag-matrix">
+                            <table class="table table-bordered align-middle mb-0">
+                                <thead class="table-light">
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Dev</th>
+                                    <th>QA</th>
+                                    <th>Prod</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        Smart cache
+                                        <div class="text-body-secondary small">
+                                            Reduce DB load by caching popular queries.
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check form-switch d-inline-flex align-items-center gap-1">
+                                            <input class="form-check-input" type="checkbox" checked>
+                                            <span class="small">On</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check form-switch d-inline-flex align-items-center gap-1">
+                                            <input class="form-check-input" type="checkbox" checked>
+                                            <span class="small">On</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check form-switch d-inline-flex align-items-center gap-1">
+                                            <input class="form-check-input" type="checkbox">
+                                            <span class="small">Off</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        New checkout UI
+                                        <div class="text-body-secondary small">
+                                            Gradual rollout for A/B testing.
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge text-bg-secondary">Dev-only</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge text-bg-info">50% rollout</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge text-bg-secondary">Off</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Strict rate limiting
+                                        <div class="text-body-secondary small">
+                                            Aggressive throttling for noisy clients.
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge text-bg-secondary">Off</span>
+                                    </td>
+                                    <td>
+                                        <div class="form-check form-switch d-inline-flex align-items-center gap-1">
+                                            <input class="form-check-input" type="checkbox">
+                                            <span class="small">Off</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check form-switch d-inline-flex align-items-center gap-1">
+                                            <input class="form-check-input" type="checkbox" checked>
+                                            <span class="small">On</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="my-4">
+
+            <!-- WHAT-IF SIMULATION -->
+            <section id="section-whatif" class="mb-4">
+                <p class="section-title mb-0">What-if simulation</p>
+                <h2 class="h5 mb-3">Cost vs performance scenario</h2>
+
+                <div class="row g-3">
+                    <div class="col-lg-5">
+                        <div class="card mb-2">
+                            <div class="card-header">
+                                Inputs
+                            </div>
+                            <div class="card-body small">
+                                <div class="mb-3">
+                                    <label class="form-label">Target RPS (requests per second)</label>
+                                    <input type="range" class="form-range" min="100" max="5000" value="1000"
+                                           id="rpsRange">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="text-body-secondary">100</span>
+                                        <span class="fw-semibold"><span id="rpsValue">1,000</span> RPS</span>
+                                        <span class="text-body-secondary">5000</span>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Instances</label>
+                                    <select class="form-select">
+                                        <option>2 (small)</option>
+                                        <option selected>4 (medium)</option>
+                                        <option>6 (large)</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Cache hit ratio (expected)</label>
+                                    <select class="form-select">
+                                        <option>0–30%</option>
+                                        <option selected>30–60%</option>
+                                        <option>60–90%</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Region</label>
+                                    <select class="form-select">
+                                        <option>Single region</option>
+                                        <option selected>Multi-region active-active</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-sm btn-primary w-100">
+                                    Recalculate scenario
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-7">
+                        <div class="card mb-2">
+                            <div class="card-header">
+                                Simulation result (approximate)
+                            </div>
+                            <div class="card-body small">
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <div class="text-body-secondary">Estimated monthly cost</div>
+                                        <div class="fw-semibold">
+                                            ₹ 3,20,000
+                                            <span class="delta-bad small ms-1">
+                                                <i class="bi bi-arrow-up"></i> +18%
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="text-body-secondary">P95 latency</div>
+                                        <div class="fw-semibold">
+                                            220 ms
+                                            <span class="delta-good small ms-1">
+                                                <i class="bi bi-arrow-down"></i> -35 ms
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="text-body-secondary">Error budget usage</div>
+                                        <div class="fw-semibold">
+                                            72%
+                                            <span class="delta-neutral small ms-1">
+                                                <i class="bi bi-dash"></i> moderate
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h6 class="border-bottom pb-1">Quick interpretation</h6>
+                                <ul class="small mb-0">
+                                    <li>
+                                        Good performance gains for peak load, but cost increase may need
+                                        <strong>finance approval</strong>.
+                                    </li>
+                                    <li>
+                                        If budget is tight, consider lower RPS target or fewer instances.
+                                    </li>
+                                    <li>
+                                        Higher cache hit ratio would significantly reduce cost at similar latency.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="my-4">
+
+            <!-- ACCESS REVIEW PANEL -->
+            <section id="section-access" class="mb-4">
+                <p class="section-title mb-0">Access review</p>
+                <h2 class="h5 mb-3">Manager access review for team</h2>
+
+                <div class="card mb-2">
+                    <div class="card-body small">
+                        <div class="d-flex justify-content-between mb-2">
+                            <div>
+                                <span class="fw-semibold">Quarterly access review</span>
+                                <span class="text-body-secondary ms-1">• Manager: bob • App: Reporting</span>
+                            </div>
+                            <button class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-download"></i> Export review
+                            </button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0 access-table">
+                                <thead class="table-light">
+                                <tr>
+                                    <th>User</th>
+                                    <th>Viewer</th>
+                                    <th>Editor</th>
+                                    <th>Admin</th>
+                                    <th>Last activity</th>
+                                    <th>Decision</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        alice
+                                        <div class="text-body-secondary small">FinOps</div>
+                                    </td>
+                                    <td class="text-center">
+                                        <i class="bi bi-check2 text-success"></i>
+                                    </td>
+                                    <td class="text-center">
+                                        <i class="bi bi-check2 text-success"></i>
+                                    </td>
+                                    <td class="text-center">
+                                        <i class="bi bi-x text-body-secondary"></i>
+                                    </td>
+                                    <td>Yesterday</td>
+                                    <td>
+                                        <select class="form-select form-select-sm">
+                                            <option>Keep</option>
+                                            <option>Remove Editor</option>
+                                            <option>Remove all access</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        charlie
+                                        <div class="text-body-secondary small">Marketing</div>
+                                    </td>
+                                    <td class="text-center">
+                                        <i class="bi bi-check2 text-success"></i>
+                                    </td>
+                                    <td class="text-center">
+                                        <i class="bi bi-x text-body-secondary"></i>
+                                    </td>
+                                    <td class="text-center">
+                                        <i class="bi bi-x text-body-secondary"></i>
+                                    </td>
+                                    <td>45 days ago</td>
+                                    <td>
+                                        <select class="form-select form-select-sm">
+                                            <option selected>Remove all access</option>
+                                            <option>Keep</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        dba.service
+                                        <div class="text-body-secondary small">Service account</div>
+                                    </td>
+                                    <td class="text-center">
+                                        <i class="bi bi-check2 text-success"></i>
+                                    </td>
+                                    <td class="text-center">
+                                        <i class="bi bi-check2 text-success"></i>
+                                    </td>
+                                    <td class="text-center">
+                                        <i class="bi bi-check2 text-success"></i>
+                                    </td>
+                                    <td>3 hours ago</td>
+                                    <td>
+                                        <select class="form-select form-select-sm">
+                                            <option>Keep</option>
+                                            <option>Downgrade to Editor</option>
+                                            <option>Remove all access</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="mt-3 d-flex justify-content-between">
+                            <div class="text-body-secondary small">
+                                Tip: sort by "Last activity" to quickly spot dormant accounts.
+                            </div>
+                            <button class="btn btn-sm btn-success">
+                                Submit review decisions
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="my-4">
+
+            <!-- COMMAND PALETTE SECTION -->
+            <section id="section-command" class="mb-5">
+                <p class="section-title mb-0">Command palette</p>
+                <h2 class="h5 mb-3">Keyboard-first navigation</h2>
+
+                <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#commandPaletteModal">
+                    <i class="bi bi-command me-1"></i> Open command palette
+                </button>
+
+                <div class="small text-body-secondary mt-2">
+                    This modal is a simple command palette. In a real app, bind <kbd>Ctrl</kbd> + <kbd>K</kbd>
+                    and dynamically populate commands based on user permissions and context.
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+
+<footer class="border-top py-3 mt-auto small">
+    <div class="container-fluid d-flex justify-content-between flex-wrap gap-2 text-body-secondary">
+        <span>© 2026 Advanced Enterprise UI Patterns</span>
+        <span>Bootstrap 5 + Icons • Dark mode • Single-file gallery</span>
+    </div>
+</footer>
+
+<!-- BULK EDIT MODAL -->
+<div class="modal fade" id="bulkEditModal" tabindex="-1" aria-labelledby="bulkEditModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <form class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="bulkEditModalLabel">
+                    Bulk update status for 37 items
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body small">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <h6>New values</h6>
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+                            <select class="form-select form-select-sm">
+                                <option>In progress</option>
+                                <option selected>Approved</option>
+                                <option>Rejected</option>
+                                <option>Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Comment (optional)</label>
+                            <textarea class="form-control" rows="3"
+                                      placeholder="Why are you approving these changes?"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Notify owners</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="notifyOwners" checked>
+                                <label class="form-check-label" for="notifyOwners">
+                                    Send email notification to item owners
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-7">
+                        <h6>Impact summary</h6>
+                        <ul class="list-unstyled mb-2">
+                            <li>
+                                <span class="impact-pill impact-pill-changed">
+                                    <i class="bi bi-arrow-right"></i> 29 items from "Pending approval" → "Approved"
+                                </span>
+                            </li>
+                            <li>
+                                <span class="impact-pill impact-pill-added">
+                                    <i class="bi bi-person-check"></i> 8 owners will receive notifications
+                                </span>
+                            </li>
+                            <li>
+                                <span class="impact-pill impact-pill-removed">
+                                    <i class="bi bi-exclamation-triangle"></i> 3 high-risk changes included
+                                </span>
+                            </li>
+                        </ul>
+
+                        <div class="border rounded p-2 mb-2">
+                            <div class="fw-semibold mb-1">Breakdown</div>
+                            <ul class="mb-0">
+                                <li>High risk: 3 changes (Payments, DB migrations)</li>
+                                <li>Medium risk: 12 changes (config tweaks)</li>
+                                <li>Low risk: 22 changes (doc & metadata)</li>
+                            </ul>
+                        </div>
+
+                        <div class="border rounded p-2">
+                            <div class="fw-semibold mb-1">Sample affected items</div>
+                            <div class="table-responsive">
+                                <table class="table table-sm mb-0 align-middle">
+                                    <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Summary</th>
+                                        <th>Risk</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>CHG-20011</td>
+                                        <td>Upgrade Redis cluster to 7.x</td>
+                                        <td><span class="badge text-bg-danger">High</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>CHG-20012</td>
+                                        <td>Enable caching for Billing API</td>
+                                        <td><span class="badge text-bg-warning">Medium</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>SR-33001</td>
+                                        <td>Grant Reporting access to finance</td>
+                                        <td><span class="badge text-bg-success">Low</span></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer small">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    Cancel
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check2-circle me-1"></i> Apply to 37 items
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- COMMAND PALETTE MODAL -->
+<div class="modal fade command-modal" id="commandPaletteModal" tabindex="-1"
+     aria-labelledby="commandPaletteLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body p-0">
+                <div class="border-bottom p-2 d-flex align-items-center gap-2">
+                    <i class="bi bi-search text-body-secondary ms-2"></i>
+                    <input type="text" class="form-control border-0 shadow-none"
+                           placeholder="Type a command or search (e.g., 'Go to flags', 'New incident')"
+                           id="commandInput">
+                    <span class="small text-body-secondary me-2 d-none d-md-inline">Press Esc to close</span>
+                </div>
+                <div class="command-list p-2 small">
+                    <div class="text-body-secondary mb-1">Navigation</div>
+                    <button class="btn btn-sm w-100 text-start mb-1 btn-outline-secondary">
+                        <i class="bi bi-inboxes me-2"></i>Go to Work Queue
+                    </button>
+                    <button class="btn btn-sm w-100 text-start mb-1 btn-outline-secondary">
+                        <i class="bi bi-toggle2-on me-2"></i>Open Feature Flags
+                    </button>
+                    <button class="btn btn-sm w-100 text-start mb-3 btn-outline-secondary">
+                        <i class="bi bi-clipboard2-pulse me-2"></i>Show Health Heatmap
+                    </button>
+
+                    <div class="text-body-secondary mb-1">Actions</div>
+                    <button class="btn btn-sm w-100 text-start mb-1 btn-outline-secondary">
+                        <i class="bi bi-plus-circle me-2"></i>New incident
+                    </button>
+                    <button class="btn btn-sm w-100 text-start mb-1 btn-outline-secondary">
+                        <i class="bi bi-shield-lock me-2"></i>Start access review
+                    </button>
+                    <button class="btn btn-sm w-100 text-start mb-1 btn-outline-secondary">
+                        <i class="bi bi-arrow-repeat me-2"></i>Refresh current view
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+<script>
+    // Dark mode toggle using data-bs-theme + localStorage
+    (function () {
+        const root = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeToggleIcon');
+        const storedTheme = localStorage.getItem('bs-theme-advanced-ui');
+
+        function setTheme(theme) {
+            root.setAttribute('data-bs-theme', theme);
+            localStorage.setItem('bs-theme-advanced-ui', theme);
+            if (theme === 'dark') {
+                if (themeToggle) themeToggle.checked = true;
+                if (themeIcon) themeIcon.className = 'bi bi-brightness-high-fill';
+            } else {
+                if (themeToggle) themeToggle.checked = false;
+                if (themeIcon) themeIcon.className = 'bi bi-moon-stars-fill';
+            }
+        }
+
+        if (storedTheme === 'dark' || storedTheme === 'light') {
+            setTheme(storedTheme);
+        } else {
+            setTheme('light');
+        }
+
+        if (themeToggle) {
+            themeToggle.addEventListener('change', function () {
+                setTheme(this.checked ? 'dark' : 'light');
+            });
+        }
+    })();
+
+    // Simple RPS slider label update
+    (function () {
+        const range = document.getElementById('rpsRange');
+        const valueLabel = document.getElementById('rpsValue');
+        if (!range || !valueLabel) return;
+        const update = () => {
+            const v = parseInt(range.value, 10);
+            valueLabel.textContent = v.toLocaleString();
+        };
+        range.addEventListener('input', update);
+        update();
+    })();
+
+    // Command palette: open with Ctrl+K
+    (function () {
+        const modal = document.getElementById('commandPaletteModal');
+        const input = document.getElementById('commandInput');
+
+        document.addEventListener('keydown', function (e) {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                const modalInstance = bootstrap.Modal.getOrCreateInstance(modal);
+                modalInstance.show();
+            }
+        });
+
+        if (modal) {
+            modal.addEventListener('shown.bs.modal', function () {
+                if (input) input.focus();
+            });
+        }
+    })();
+</script>
+
+</body>
+</html>
