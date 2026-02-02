@@ -1,25 +1,17 @@
--- Replace dbo.AuditTable and the ORDER BY column (AuditId / ChangedAt) as needed
-
 SELECT
     d.EntityId,
-    d.EntityType,
-    d.Field                AS DeletedField,
-    d.Operation            AS DeletedOperation,
-    d.OldValue             AS DeletedVanityUrl_OldValue,
-    d.NewValue             AS DeletedVanityUrl_NewValue,   -- often NULL for deletes
-    d.AuditId              AS DeleteAuditId,               -- or ChangedAt
-    dest.NewValue          AS LatestDestinationValue,
-    dest.AuditId           AS DestinationAuditId           -- or ChangedAt
-FROM dbo.AuditTable d
+    d.OldValue      AS DeletedVanityUrl,
+    dest.NewValue   AS DestinationUrl
+FROM AuditTable d
 OUTER APPLY (
-    SELECT TOP (1) a.*
-    FROM dbo.AuditTable a
+    SELECT TOP (1) a.NewValue
+    FROM AuditTable a
     WHERE a.EntityId = d.EntityId
-      AND a.Field = 'destination'          -- change if your field name differs
-      AND a.Operation IN ('I','U')         -- destination value that was set
+      AND a.Field = 'destination'
+      AND a.Operation IN ('I','U')
       AND a.NewValue IS NOT NULL
-    ORDER BY a.AuditId DESC                -- or a.ChangedAt DESC
+      AND a.AuditId <= d.AuditId      -- IMPORTANT: only up to delete moment
+    ORDER BY a.AuditId DESC
 ) dest
 WHERE d.Operation = 'D'
-  AND d.Field = 'vanityurl'                -- change if your field name differs
-ORDER BY d.AuditId DESC;                   -- or d.ChangedAt DESC
+  AND d.Field = 'vanityurl';
