@@ -1,17 +1,8 @@
-SELECT
-    d.EntityId,
-    d.OldValue      AS DeletedVanityUrl,
-    dest.NewValue   AS DestinationUrl
-FROM AuditTable d
-OUTER APPLY (
-    SELECT TOP (1) a.NewValue
-    FROM AuditTable a
-    WHERE a.EntityId = d.EntityId
-      AND a.Field = 'destination'
-      AND a.Operation IN ('I','U')
-      AND a.NewValue IS NOT NULL
-      AND a.AuditId <= d.AuditId      -- IMPORTANT: only up to delete moment
-    ORDER BY a.AuditId DESC
-) dest
-WHERE d.Operation = 'D'
-  AND d.Field = 'vanityurl';
+SELECT dr.*
+FROM DecomRequest dr
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM DecomRequestItems dri
+    WHERE dri.DecomRequestId = dr.Id
+      AND dri.State = 'Completed'   -- 👈 change to your target state
+);
