@@ -1,0 +1,7 @@
+...
+| eval utc_input = replace('message.time', "Z$", "+0000")
+| eval parsed_time = strptime(utc_input, "%Y-%m-%dT%H:%M:%S%z")
+| eval utc_time = strftime(parsed_time, "%Y-%m-%d %H:%M:%S UTC")
+| eval local_time = strftime(parsed_time, "%Y-%m-%d %H:%M:%S %Z")
+| table utc_time local_time message.message
+| sort - parsed_time
