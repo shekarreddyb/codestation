@@ -1,0 +1,46 @@
+========================================================================================================================
+                                     ONTAP REST API: IN-MEMORY DISCOVERY & CLEANUP LIFECYCLE
+========================================================================================================================
+
+          [ STEP 1: Fetch Bulk Data ]
+          Array 1 = GET /api/snapmirror/relationships
+          Array 2 = GET /api/snapmirror/relationships?list_destinations_only=true
+                                                 │
+                                                 ▼
+                             [ STEP 2: In-Memory Search Loop per Volume ]
+                             Does your target {volume_uuid} exist anywhere in Array 1 or 2?
+                                                 │
+                        ┌────────────────────────┴────────────────────────┐
+                        ▼ Yes                                             ▼ No
+       Where is the {volume_uuid} found?                            [ STEP 3: Safe Delete ]
+                        │                                           Volume has no mirrors.
+       ┌────────────────┴────────────────┐                          Proceed straight to:
+       ▼ Found in Array 1                ▼ Found ONLY in Array 2    DELETE /api/storage/volumes/{id}
+    Evaluate object properties:          (or as "source" in Array 1)
+       │                                         │
+       ├─► Matches "source.uuid" ────────┐       │
+       │                                 ▼       ▼
+       └─► Matches "destination.uuid" ──► │  VOLUME IS THE SOURCE │
+                    │                     └──────┬────────────────┘
+                    ▼                            │
+       ┌─────────────────────────┐               ▼
+       │  VOLUME IS DESTINATION  │    [ STEP A1: Bring Vol ONLINE ]
+       └────────────┬────────────┘    PATCH /api/storage/volumes/{uuid}
+                    │                     { "state": "online" }
+                    ▼                            │
+       [ STEP B1: Delete Mirror ]                ▼
+       DELETE /api/snapmirror/        [ STEP A2: Delete/Release Mirror ]
+       relationships/{uuid}?force=trueDELETE /api/snapmirror/relationships/{uuid}?source_only=true
+                    │                            │
+                    ▼                            ▼
+       [ STEP B2: Delete Volume ]     [ STEP A3: Take Vol OFFLINE ]
+       DELETE /api/storage/           PATCH /api/storage/volumes/{uuid}
+       volumes/{uuid}                     { "state": "offline" }
+                    │                            │
+                    ▼                            ▼
+             [ WORKFLOW END ]         [ STEP A4: Delete Volume ]
+                                      DELETE /api/storage/volumes/{uuid}
+                                                 │
+                                                 ▼
+                                          [ WORKFLOW END ]
+========================================================================================================================
